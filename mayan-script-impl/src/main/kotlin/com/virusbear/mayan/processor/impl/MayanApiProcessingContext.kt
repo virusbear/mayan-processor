@@ -14,10 +14,10 @@ class MayanApiProcessingContext(
         get() = MayanDocument(client, doc)
 
     override suspend fun regex(pattern: String, group: Int): String =
-        pattern.toRegex().find(document.content)?.groups?.get(group)?.value ?: ""
+        pattern.toRegex().find(document.content())?.groups?.get(group)?.value ?: ""
 
     override suspend fun regex(pattern: String, group: String): String =
-        pattern.toRegex().find(document.content)?.groups?.get(group)?.value ?: ""
+        pattern.toRegex().find(document.content())?.groups?.get(group)?.value ?: ""
 
     override suspend fun tag(tag: String) {
         TODO("Not yet supported")
@@ -25,8 +25,8 @@ class MayanApiProcessingContext(
 
     override suspend fun metadata(type: String, value: String) {
         runBlocking {
-            client.metadataIdForDocument(document.id, type)?.let {
-                client.metadata(document.id, it, value)
+            client.metadataIdForDocument(document.id(), type)?.let {
+                client.metadata(document.id(), it, value)
             }
         }
     }
