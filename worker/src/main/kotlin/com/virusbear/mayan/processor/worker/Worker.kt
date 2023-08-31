@@ -33,18 +33,21 @@ suspend fun Worker(
 
         val scheduler = launch {
             for(task in queue) {
-                if(task.attempt >= config.maxAttempts) {
+                if(task.attempts >= config.maxAttempts) {
                     logger.warn { "Document ${task.documentId} reached retry limit of ${config.maxAttempts}. Ignoring" }
+                    task.ack()
                     continue
                 }
 
                 val deferred = async {
                     try {
+                        logger.warn { "$task" }
                         host.process(MayanApiProcessingContext(client, client.document(task.documentId)))
+                        task.ack()
                     } catch(ex: Exception) {
                         logger.error(ex) { "Error processing document ${task.documentId}" }
                         logger.info { "Requeuing document ${task.documentId}" }
-                        queue.send(task.copy(attempt = task.attempt + 1))
+                        task.nack()
                     }
                 }
 

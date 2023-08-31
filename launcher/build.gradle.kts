@@ -16,6 +16,5 @@ dependencies {
     implementation(project(":entrypoint"))
     implementation(project(":worker"))
     implementation(project(":mayan-client"))
-    implementation("org.redisson:redisson:3.23.1")
-    implementation("com.squareup.tape2:tape:2.0.0-beta1")
+    implementation("com.rabbitmq:amqp-client:5.18.0")
 }

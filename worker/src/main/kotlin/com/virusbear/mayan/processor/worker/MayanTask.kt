@@ -1,6 +1,8 @@
 package com.virusbear.mayan.processor.worker
 
-data class MayanTask(
-    val documentId: Int,
-    val attempt: Int = 0
-)
+interface MayanTask {
+    val documentId: Int
+    val attempts: Int
+    suspend fun ack()
+    suspend fun nack()
+}

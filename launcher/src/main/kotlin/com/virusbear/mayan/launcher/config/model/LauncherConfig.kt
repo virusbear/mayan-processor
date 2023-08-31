@@ -4,10 +4,11 @@ import com.virusbear.mayan.entrypoint.EntryPointConfig
 import com.virusbear.mayan.processor.worker.WorkerConfig
 
 data class LauncherConfig(
-    val profile: Set<Profile>,
+    val profile: Set<Profile> = setOf(Profile.Entrypoint, Profile.Worker),
     val mayan: MayanConfig,
     val entrypoint: EntryPointConfig = EntryPointConfig(),
-    val worker: WorkerConfig = WorkerConfig()
+    val worker: WorkerConfig = WorkerConfig(),
+    val queue: RabbitMqConfig = RabbitMqConfig()
 ) {
     val useLocalTaskQueue: Boolean = Profile.Entrypoint in profile && Profile.Worker in profile
 }

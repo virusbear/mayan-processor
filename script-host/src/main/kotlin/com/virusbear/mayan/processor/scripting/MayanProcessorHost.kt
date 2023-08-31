@@ -5,7 +5,6 @@ import com.virusbear.mayan.processor.ProcessingContext
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
-import org.apache.commons.io.monitor.FileAlterationListenerAdaptor
 import org.apache.commons.io.monitor.FileAlterationMonitor
 import org.apache.commons.io.monitor.FileAlterationObserver
 import java.io.File
@@ -25,10 +24,15 @@ class MayanProcessorHost(
     private val compilationConfiguration = createJvmCompilationConfigurationFromTemplate<MayanProcessorScript>()
     private val scriptHost = BasicJvmScriptingHost()
 
-    private val processors = loadProcessors(scriptPath).toMutableMap()
+    private val processors: MutableMap<String, MayanProcessor>
     private val disabledProcessors = mutableSetOf<String>()
 
     init {
+        if(!scriptPath.exists()) {
+            scriptPath.mkdirs()
+        }
+
+        processors = loadProcessors(scriptPath).toMutableMap()
         runBlocking {
             processors.values.map {
                 async {
@@ -38,36 +42,9 @@ class MayanProcessorHost(
         }
 
         if(watch) {
+            val listener = ScriptFileAlterationListener(this, processors)
             val observer = FileAlterationObserver(scriptPath) { it.isFile && it.name.endsWith(".mayan.kts") }
-            observer.addListener(object: FileAlterationListenerAdaptor() {
-                override fun onFileCreate(file: File) {
-                    reloadProcessor(file)
-                }
-
-                override fun onFileChange(file: File) {
-                    reloadProcessor(file)
-                }
-
-                override fun onFileDelete(file: File) {
-                    val (id, _) = loadMayanProcessor(file) ?: return
-                    closeProcessor(id)
-                }
-
-                private fun reloadProcessor(file: File) {
-                    val (id, processor) = loadMayanProcessor(file) ?: return
-                    closeProcessor(id)
-                    processors[id] = processor
-                    runBlocking {
-                        processor.init()
-                    }
-                }
-
-                private fun closeProcessor(id: String) {
-                    runBlocking {
-                        processors[id]?.close()
-                    }
-                }
-            })
+            observer.addListener(listener)
             FileAlterationMonitor(3L, observer).start()
         }
     }
@@ -97,7 +74,7 @@ class MayanProcessorHost(
         }.filterNotNull().associateBy { it.first }.mapValues { it.value.second }
     }
 
-    private fun loadMayanProcessor(file: File): Pair<String, MayanProcessor>? {
+    internal fun loadMayanProcessor(file: File): Pair<String, MayanProcessor>? {
         logger.info { "Loading script ${file.relativeTo(scriptPath)}" }
         val builder = MayanProcessorBuilderImpl(file.name.removeSuffix(".mayan.kts"))
 

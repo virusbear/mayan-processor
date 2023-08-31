@@ -1,6 +1,8 @@
 package com.virusbear.mayan.entrypoint
 
+import com.virusbear.mayan.processor.worker.BasicMayanTask
 import com.virusbear.mayan.processor.worker.MayanTask
+import com.virusbear.mayan.processor.worker.MayanTaskIterator
 import com.virusbear.mayan.processor.worker.MayanTaskQueue
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -26,7 +28,7 @@ suspend fun EntryPoint(
                     val documentId = call.parameters["documentId"]?.toIntOrNull()
 
                     documentId?.let {
-                        queue.send(MayanTask(documentId))
+                        queue.send(BasicMayanTask(documentId))
                         call.respond(HttpStatusCode.Accepted)
                     } ?: call.respond(HttpStatusCode.BadRequest)
                 }

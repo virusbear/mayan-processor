@@ -1,10 +1,13 @@
 package com.virusbear.mayan.launcher
 
+import com.rabbitmq.client.Channel
+import com.rabbitmq.client.ConnectionFactory
 import com.virusbear.mayan.client.MayanClient
 import com.virusbear.mayan.config.ConfigLoader
 import com.virusbear.mayan.entrypoint.EntryPoint
 import com.virusbear.mayan.launcher.config.model.LauncherConfig
 import com.virusbear.mayan.launcher.config.model.Profile
+import com.virusbear.mayan.launcher.config.model.RabbitMqConfig
 import com.virusbear.mayan.processor.worker.MayanTask
 import com.virusbear.mayan.processor.worker.MayanTaskIterator
 import com.virusbear.mayan.processor.worker.MayanTaskQueue
@@ -31,21 +34,7 @@ internal object Launcher {
             //TODO: Get dependencies
             val client = MayanClient(config.mayan.host, config.mayan.user, config.mayan.password)
 
-            val queue = if(config.useLocalTaskQueue) {
-                ChannelBackedMayanTaskQueue()
-            } else {
-
-            }
-
-            val queue = object: MayanTaskQueue {
-                override suspend fun send(task: MayanTask) {
-                    println(task)
-                }
-
-                override fun iterator(): MayanTaskIterator {
-                    TODO("Not yet implemented")
-                }
-            }
+            val queue = createRabbitMqTaskQueue(config.queue)
 
             for(profile in config.profile) {
                 when(profile) {
@@ -76,6 +65,19 @@ internal object Launcher {
 
         return configLoader.load<LauncherConfig>().getOrThrow()
     }
+}
+
+fun CoroutineScope.createRabbitMqTaskQueue(config: RabbitMqConfig): MayanTaskQueue {
+    val channel = ConnectionFactory().apply {
+        host = config.host
+        port = config.port
+        username = config.username
+        password = config.password
+    }.newConnection().createChannel()
+
+    channel.queueDeclare(config.queue, true, false, false, null)
+
+    return RabbitTaskQueue(channel, config.queue, this)
 }
 
 fun CoroutineScope.launchRestarting(
