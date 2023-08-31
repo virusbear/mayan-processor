@@ -6,7 +6,7 @@ plugins {
 val kotlin_version: String by project
 val coroutines_version: String by project
 val serialization_version = "1.3.3"
-val ktor_version = "2.1.3"
+val ktor_version: String by project
 val logging_version: String by project
 
 dependencies {
