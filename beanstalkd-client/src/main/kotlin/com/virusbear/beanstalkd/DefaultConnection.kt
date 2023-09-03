@@ -47,7 +47,7 @@ class DefaultConnection(
 
             val code = responseParams.first()
             val params = responseParams.drop(1)
-            val responseType = responseTypes.firstOrNull { it.code == code } ?: return@withLock Result.failure(UnknownResponseException())
+            val responseType = responseTypes.firstOrNull { it.code == code } ?: return@withLock Result.failure(UnknownResponseException(code))
 
             val response = responseType.read(params, readChannel)
             operation.read(response)

@@ -2,7 +2,7 @@ package com.virusbear.beanstalkd
 
 class DisconnectedException: RuntimeException("Disconnected from beanstalkd server")
 class InvalidResponseException: RuntimeException("The server responded with an invalid response")
-class UnknownResponseException: RuntimeException("The server responded with an unknwon response")
+class UnknownResponseException(val code: String): RuntimeException("The server responded with an unknown response: $code")
 
 class OutOfMemoryException: RuntimeException("Beanstalkd out of memory")
 
@@ -22,3 +22,4 @@ class BuriedException(val id: UInt): RuntimeException("Job $id is buried")
 class DeadlineSoonException: RuntimeException("TTR approaches deadline")
 class TimedOutException: RuntimeException("Request timed out")
 class NotFoundException: RuntimeException("Not found")
+class NotIgnoredException(val tube: String): RuntimeException("Tube $tube not ignored")

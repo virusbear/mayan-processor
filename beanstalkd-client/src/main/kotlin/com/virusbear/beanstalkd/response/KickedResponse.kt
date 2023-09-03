@@ -2,13 +2,13 @@ package com.virusbear.beanstalkd.response
 
 import io.ktor.utils.io.*
 
-data class BuriedResponse(
-    val id: UInt?
+data class KickedResponse(
+    val count: UInt
 ): Response {
     companion object: ResponseType {
-        override val code: String = "BURIED"
+        override val code: String = "KICKED"
 
         override suspend fun read(params: List<String>, channel: ByteReadChannel): Response =
-            BuriedResponse(params.firstOrNull()?.toUInt())
+            KickedResponse(params.firstOrNull()?.toUInt() ?: 0u)
     }
 }

@@ -4,11 +4,11 @@ import com.virusbear.beanstalkd.Job
 import io.ktor.utils.io.*
 import java.nio.ByteBuffer
 
-data class ReservedResponse(
+data class FoundResponse(
     val job: Job
 ): Response {
     companion object: ResponseType {
-        override val code: String = "RESERVED"
+        override val code: String = "FOUND"
         override suspend fun read(params: List<String>, channel: ByteReadChannel): Response {
             val id = params[0].toUInt()
             val length = params[1].toInt()
@@ -19,8 +19,7 @@ data class ReservedResponse(
 
             channel.readPacket(2).close()
 
-            return ReservedResponse(Job(id, buffer))
+            return FoundResponse(Job(id, buffer))
         }
     }
 }
-
