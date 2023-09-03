@@ -8,7 +8,7 @@ data class LauncherConfig(
     val mayan: MayanConfig,
     val entrypoint: EntryPointConfig = EntryPointConfig(),
     val worker: WorkerConfig = WorkerConfig(),
-    val queue: RabbitMqConfig = RabbitMqConfig()
+    val queue: BeanstalkdConfig = BeanstalkdConfig()
 ) {
     val useLocalTaskQueue: Boolean = Profile.Entrypoint in profile && Profile.Worker in profile
 }

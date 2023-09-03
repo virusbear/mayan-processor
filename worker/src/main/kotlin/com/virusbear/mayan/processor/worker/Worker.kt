@@ -41,7 +41,6 @@ suspend fun Worker(
 
                 val deferred = async {
                     try {
-                        logger.warn { "$task" }
                         host.process(MayanApiProcessingContext(client, client.document(task.documentId)))
                         task.ack()
                     } catch(ex: Exception) {

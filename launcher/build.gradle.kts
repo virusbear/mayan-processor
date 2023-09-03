@@ -16,5 +16,5 @@ dependencies {
     implementation(project(":entrypoint"))
     implementation(project(":worker"))
     implementation(project(":mayan-client"))
-    implementation("com.rabbitmq:amqp-client:5.18.0")
+    implementation(project(":beanstalkd-client"))
 }

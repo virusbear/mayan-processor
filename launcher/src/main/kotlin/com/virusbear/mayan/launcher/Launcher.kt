@@ -1,20 +1,15 @@
 package com.virusbear.mayan.launcher
 
-import com.rabbitmq.client.Channel
-import com.rabbitmq.client.ConnectionFactory
+import com.virusbear.beanstalkd.DefaultClient
 import com.virusbear.mayan.client.MayanClient
 import com.virusbear.mayan.config.ConfigLoader
 import com.virusbear.mayan.entrypoint.EntryPoint
+import com.virusbear.mayan.launcher.beanstalkd.BeanstalkdTaskQueue
 import com.virusbear.mayan.launcher.config.model.LauncherConfig
 import com.virusbear.mayan.launcher.config.model.Profile
-import com.virusbear.mayan.launcher.config.model.RabbitMqConfig
-import com.virusbear.mayan.processor.worker.MayanTask
-import com.virusbear.mayan.processor.worker.MayanTaskIterator
-import com.virusbear.mayan.processor.worker.MayanTaskQueue
 import com.virusbear.mayan.processor.worker.Worker
 import kotlinx.coroutines.*
 import mu.KotlinLogging
-import mu.withLoggingContext
 import java.io.File
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
@@ -34,12 +29,19 @@ internal object Launcher {
             //TODO: Get dependencies
             val client = MayanClient(config.mayan.host, config.mayan.user, config.mayan.password)
 
-            val queue = createRabbitMqTaskQueue(config.queue)
+            val beanstalkdClient = DefaultClient(config.queue.host, config.queue.port)
+            val queue = BeanstalkdTaskQueue(beanstalkdClient, config.queue.ttr)
 
             for(profile in config.profile) {
                 when(profile) {
-                    Profile.Entrypoint -> launchRestarting(name = "EntryPoint") { EntryPoint(queue, config.entrypoint) }
-                    Profile.Worker -> launchRestarting(name= "Worker") { Worker(queue, config.worker, client) }
+                    Profile.Entrypoint -> {
+                        config.queue.queue?.let { beanstalkdClient.use(it) }
+                        launchRestarting(name = "EntryPoint") { EntryPoint(queue, config.entrypoint) }
+                    }
+                    Profile.Worker -> {
+                        config.queue.queue?.let { beanstalkdClient.watch(it) }
+                        launchRestarting(name= "Worker") { Worker(queue, config.worker, client) }
+                    }
                     //Profile.Ocr -> TODO("Not yet implemented!")
                     else -> TODO()
                 }
@@ -65,19 +67,6 @@ internal object Launcher {
 
         return configLoader.load<LauncherConfig>().getOrThrow()
     }
-}
-
-fun CoroutineScope.createRabbitMqTaskQueue(config: RabbitMqConfig): MayanTaskQueue {
-    val channel = ConnectionFactory().apply {
-        host = config.host
-        port = config.port
-        username = config.username
-        password = config.password
-    }.newConnection().createChannel()
-
-    channel.queueDeclare(config.queue, true, false, false, null)
-
-    return RabbitTaskQueue(channel, config.queue, this)
 }
 
 fun CoroutineScope.launchRestarting(
