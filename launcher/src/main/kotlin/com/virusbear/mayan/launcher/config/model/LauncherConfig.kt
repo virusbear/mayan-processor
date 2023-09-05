@@ -9,6 +9,4 @@ data class LauncherConfig(
     val entrypoint: EntryPointConfig = EntryPointConfig(),
     val worker: WorkerConfig = WorkerConfig(),
     val queue: BeanstalkdConfig = BeanstalkdConfig()
-) {
-    val useLocalTaskQueue: Boolean = Profile.Entrypoint in profile && Profile.Worker in profile
-}
+)

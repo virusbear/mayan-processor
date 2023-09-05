@@ -10,6 +10,6 @@ abstract class AbstractOperation<T>: Operation<T> {
             is InternalErrorResponse -> Result.failure(InternalErrorException())
             is BadFormatResponse -> Result.failure(BadFormatException())
             is UnknownCommandResponse -> Result.failure(UnknownCommandException())
-            else -> Result.failure(RuntimeException("An unknown error occurred reading response of type ${response::class.simpleName}"))
+            else -> Result.failure(RuntimeException("An unknown error occurred reading response of type ${response::class.simpleName}: $response"))
         }
 }

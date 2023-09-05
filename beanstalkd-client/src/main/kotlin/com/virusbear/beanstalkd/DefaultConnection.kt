@@ -30,6 +30,12 @@ class DefaultConnection(
     }
 
     override suspend fun <T> handle(operation: Operation<T>): Result<T> =
+        //TODO: add current task to internal operation queue.
+        //TODO: use background Job to process this queue
+        //TODO: notify about completeness of operation using some kind of event or callback.
+        //TODO: return as soon as queue has completed executing the operation
+        //TODO: are there any operations that need to be executed in order?
+        //TODO: do we want to have some kind of "PipelineOperation" being able to combine multiple operations executed one after the other in order of definition?
         mutex.withLock {
             if(socket.isClosed || readChannel.isClosedForRead || writeChannel.isClosedForWrite) {
                 return@withLock Result.failure(DisconnectedException())

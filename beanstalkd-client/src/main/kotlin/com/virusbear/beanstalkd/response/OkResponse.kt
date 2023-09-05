@@ -20,6 +20,8 @@ class OkResponse(
                     key to value.removeSurrounding("\"")
                 }
             }
+            //Read last line break
+            channel.readPacket(2).close()
 
             return OkResponse(stats)
         }

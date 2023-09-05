@@ -23,39 +23,22 @@ suspend fun Worker(
         val logger = KotlinLogging.logger("Worker")
         val host = MayanProcessorHost(config.scriptPath, config.watch).apply { config.disabledModules.forEach(this::disable) }
 
-        val channel = Channel<Deferred<Unit>>(config.parallelism)
+        for(task in queue) {
+            if (task.attempts >= config.maxAttempts) {
+                logger.warn { "Document ${task.documentId} reached retry limit of ${config.maxAttempts}. Ignoring" }
+                task.ack()
+                continue
+            }
 
-        val awaiter = launch {
-            for(task in channel) {
-                task.await()
+            try {
+                host.process(MayanApiProcessingContext(client, client.document(task.documentId)))
+                task.ack()
+            } catch (ex: Exception) {
+                logger.error(ex) { "Error processing document ${task.documentId}" }
+                logger.info { "Requeuing document ${task.documentId}" }
+                task.nack()
             }
         }
-
-        val scheduler = launch {
-            for(task in queue) {
-                if(task.attempts >= config.maxAttempts) {
-                    logger.warn { "Document ${task.documentId} reached retry limit of ${config.maxAttempts}. Ignoring" }
-                    task.ack()
-                    continue
-                }
-
-                val deferred = async {
-                    try {
-                        host.process(MayanApiProcessingContext(client, client.document(task.documentId)))
-                        task.ack()
-                    } catch(ex: Exception) {
-                        logger.error(ex) { "Error processing document ${task.documentId}" }
-                        logger.info { "Requeuing document ${task.documentId}" }
-                        task.nack()
-                    }
-                }
-
-                channel.send(deferred)
-            }
-        }
-
-        scheduler.join()
-        awaiter.join()
     }
 }
 

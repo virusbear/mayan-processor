@@ -26,6 +26,15 @@ To debug in IntelliJ Idea, open the 'Maven Projects' tool window (View
 
 version = "2023.05"
 
+//TODO:
+//2: Nightly build of develop (only if changes were made) -> release as snapshot version
+//3: after merge on master -> release as release version -> update docker image with :latest tag
+//4: after each commit on "release" branch -> release "RCx" version -> create docker image
+//5: run qodana on every push to any branch
+//6: build any branch (only kotlin) after each push
+
+//IMPORTANT: only do releases in case build was successful
+
 project {
 
     buildType(Build)

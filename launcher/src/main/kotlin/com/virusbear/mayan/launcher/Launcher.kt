@@ -29,16 +29,23 @@ internal object Launcher {
             //TODO: Get dependencies
             val client = MayanClient(config.mayan.host, config.mayan.user, config.mayan.password)
 
-            val beanstalkdClient = DefaultClient(config.queue.host, config.queue.port)
-            val queue = BeanstalkdTaskQueue(beanstalkdClient, config.queue.ttr)
-
             for(profile in config.profile) {
                 when(profile) {
                     Profile.Entrypoint -> {
+                        logger.info { "Launching entrypoint module" }
+
+                        val beanstalkdClient = DefaultClient(config.queue.host, config.queue.port)
+                        val queue = BeanstalkdTaskQueue(beanstalkdClient, config.queue.ttr)
+
                         config.queue.queue?.let { beanstalkdClient.use(it) }
                         launchRestarting(name = "EntryPoint") { EntryPoint(queue, config.entrypoint) }
                     }
                     Profile.Worker -> {
+                        logger.info { "Launching worker module" }
+
+                        val beanstalkdClient = DefaultClient(config.queue.host, config.queue.port)
+                        val queue = BeanstalkdTaskQueue(beanstalkdClient, config.queue.ttr)
+
                         config.queue.queue?.let { beanstalkdClient.watch(it) }
                         launchRestarting(name= "Worker") { Worker(queue, config.worker, client) }
                     }
@@ -81,7 +88,7 @@ fun CoroutineScope.launchRestarting(
         try {
             block()
         } catch (ex: Exception) {
-            logger.error(ex) { }
+            logger.error(ex) { ex.message }
             delay(delay)
         }
     }

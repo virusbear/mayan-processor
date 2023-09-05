@@ -1,7 +1,9 @@
-package com.virusbear.beanstalkd.response
+package com.virusbear.beanstalkd.operation
 
 import com.virusbear.beanstalkd.NotFoundException
-import com.virusbear.beanstalkd.operation.AbstractOperation
+import com.virusbear.beanstalkd.response.NotFoundResponse
+import com.virusbear.beanstalkd.response.OkResponse
+import com.virusbear.beanstalkd.response.Response
 import io.ktor.utils.io.core.*
 
 class StatsOperation(

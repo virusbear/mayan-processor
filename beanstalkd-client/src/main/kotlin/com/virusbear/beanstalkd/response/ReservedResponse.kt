@@ -17,6 +17,7 @@ data class ReservedResponse(
             channel.readFully(buffer)
             buffer.flip()
 
+            //Read last line break
             channel.readPacket(2).close()
 
             return ReservedResponse(Job(id, buffer))
