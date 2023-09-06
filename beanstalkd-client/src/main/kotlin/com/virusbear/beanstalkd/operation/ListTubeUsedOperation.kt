@@ -9,9 +9,9 @@ class ListTubeUsedOperation: AbstractOperation<String>() {
         packet.append("list-tube-used\r\n")
     }
 
-    override suspend fun read(response: Response): Result<String> =
+    override suspend fun readResponse(response: Response): Result<String> =
         when(response) {
             is UsingResponse -> Result.success(response.tube)
-            else -> super.read(response)
+            else -> super.readResponse(response)
         }
 }

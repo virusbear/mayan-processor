@@ -15,9 +15,9 @@ class ListTubesOperation(
         packet.append("\r\n")
     }
 
-    override suspend fun read(response: Response): Result<List<String>> =
+    override suspend fun readResponse(response: Response): Result<List<String>> =
         when(response) {
             is OkResponse -> Result.success(response.stats.keys.toList())
-            else -> super.read(response)
+            else -> super.readResponse(response)
         }
 }

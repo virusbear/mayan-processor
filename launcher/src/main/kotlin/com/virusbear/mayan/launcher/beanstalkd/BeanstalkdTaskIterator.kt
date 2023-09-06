@@ -2,8 +2,10 @@ package com.virusbear.mayan.launcher.beanstalkd
 
 import com.virusbear.beanstalkd.Client
 import com.virusbear.beanstalkd.Job
+import com.virusbear.beanstalkd.TimedOutException
 import com.virusbear.mayan.processor.worker.MayanTask
 import com.virusbear.mayan.processor.worker.MayanTaskIterator
+import kotlin.time.Duration.Companion.seconds
 
 class BeanstalkdTaskIterator(
     private val client: Client
@@ -11,13 +13,17 @@ class BeanstalkdTaskIterator(
     var next: MayanTask? = null
 
     override suspend fun hasNext(): Boolean {
-        return try {
-            val job = client.reserve()
-            next = job.asMayanTask(client)
-            true
-        } catch(ex: Exception) {
-            next = null
-            false
+        while(true) {
+            return try {
+                val job = client.reserveWithTimeout(10.0.seconds)
+                next = job.asMayanTask(client)
+                true
+            } catch(ex: TimedOutException) {
+                continue
+            } catch(ex: Exception) {
+                next = null
+                false
+            }
         }
     }
 

@@ -11,9 +11,9 @@ class UseOperation(
         packet.append("use $tube\r\n")
     }
 
-    override suspend fun read(response: Response): Result<String> =
+    override suspend fun readResponse(response: Response): Result<String> =
         when(response) {
             is UsingResponse -> Result.success(response.tube)
-            else -> super.read(response)
+            else -> super.readResponse(response)
         }
 }

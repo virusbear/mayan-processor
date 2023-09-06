@@ -11,9 +11,9 @@ class WatchOperation(
         packet.append("watch $tube\r\n")
     }
 
-    override suspend fun read(response: Response): Result<UInt> =
+    override suspend fun readResponse(response: Response): Result<UInt> =
         when(response) {
             is WatchingResponse -> Result.success(response.count)
-            else -> super.read(response)
+            else -> super.readResponse(response)
         }
 }

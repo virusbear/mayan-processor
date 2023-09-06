@@ -14,10 +14,10 @@ class BuryOperation(
         packet.append("bury $id $priority\r\n")
     }
 
-    override suspend fun read(response: Response): Result<Unit> =
+    override suspend fun readResponse(response: Response): Result<Unit> =
         when(response) {
             is BuriedResponse -> Result.success(Unit)
             is NotFoundResponse -> Result.failure(NotFoundException())
-            else -> super.read(response)
+            else -> super.readResponse(response)
         }
 }

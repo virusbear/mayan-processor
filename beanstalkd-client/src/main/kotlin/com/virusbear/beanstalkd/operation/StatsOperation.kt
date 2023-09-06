@@ -22,10 +22,10 @@ class StatsOperation(
         packet.append("\r\n")
     }
 
-    override suspend fun read(response: Response): Result<Map<String, String>> =
+    override suspend fun readResponse(response: Response): Result<Map<String, String>> =
         when(response) {
             is OkResponse -> Result.success(response.stats)
             is NotFoundResponse -> Result.failure(NotFoundException())
-            else -> super.read(response)
+            else -> super.readResponse(response)
         }
 }

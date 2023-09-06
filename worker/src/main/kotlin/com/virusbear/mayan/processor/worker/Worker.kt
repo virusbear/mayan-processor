@@ -23,26 +23,44 @@ suspend fun Worker(
         val logger = KotlinLogging.logger("Worker")
         val host = MayanProcessorHost(config.scriptPath, config.watch).apply { config.disabledModules.forEach(this::disable) }
 
-        for(task in queue) {
-            if (task.attempts >= config.maxAttempts) {
-                logger.warn { "Document ${task.documentId} reached retry limit of ${config.maxAttempts}. Ignoring" }
-                task.ack()
-                continue
-            }
+        val dispatcher = newDynamicThreadPool(1, config.workerThreads).asCoroutineDispatcher()
+        val channel = Channel<Deferred<Unit>>(config.parallelism - 1)
 
-            try {
-                host.process(MayanApiProcessingContext(client, client.document(task.documentId)))
-                task.ack()
-            } catch (ex: Exception) {
-                logger.error(ex) { "Error processing document ${task.documentId}" }
-                logger.info { "Requeuing document ${task.documentId}" }
-                task.nack()
+        val awaiter = launch {
+            for(task in channel) {
+                task.await()
             }
         }
+
+        val scheduler = launch {
+            for(task in queue) {
+                val deferred = async(dispatcher) {
+                    if (task.attempts >= config.maxAttempts) {
+                        logger.warn { "Document ${task.documentId} reached retry limit of ${config.maxAttempts}. Ignoring" }
+                        task.ack()
+                        return@async
+                    }
+
+                    try {
+                        host.process(MayanApiProcessingContext(client, client.document(task.documentId)))
+                        task.ack()
+                    } catch (ex: Exception) {
+                        logger.error(ex) { "Error processing document ${task.documentId}" }
+                        logger.info { "Requeuing document ${task.documentId}" }
+                        task.nack()
+                    }
+                }
+
+                channel.send(deferred)
+            }
+        }
+
+        scheduler.join()
+        awaiter.join()
     }
 }
 
-fun newDynamicThreadPool(minPoolSize: Int, maxPoolSize: Int): ExecutorService =
+internal fun newDynamicThreadPool(minPoolSize: Int, maxPoolSize: Int): ExecutorService =
     ThreadPoolExecutor(
         minPoolSize.coerceAtLeast(0),
         maxPoolSize.coerceAtLeast(minPoolSize),

@@ -13,10 +13,10 @@ class IgnoreOperation(
         packet.append("ignore $tube\r\n")
     }
 
-    override suspend fun read(response: Response): Result<UInt> =
+    override suspend fun readResponse(response: Response): Result<UInt> =
         when(response) {
             is WatchingResponse -> Result.success(response.count)
             is NotIgnoredResponse -> Result.failure(NotIgnoredException(tube))
-            else -> super.read(response)
+            else -> super.readResponse(response)
         }
 }

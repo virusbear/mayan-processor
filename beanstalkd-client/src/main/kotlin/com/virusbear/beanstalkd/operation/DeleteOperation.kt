@@ -13,10 +13,10 @@ class DeleteOperation(
         packet.append("delete $id\r\n")
     }
 
-    override suspend fun read(response: Response): Result<Unit> =
+    override suspend fun readResponse(response: Response): Result<Unit> =
         when(response) {
             is DeletedResponse -> Result.success(Unit)
             is NotFoundResponse -> Result.failure(NotFoundException())
-            else -> super.read(response)
+            else -> super.readResponse(response)
         }
 }

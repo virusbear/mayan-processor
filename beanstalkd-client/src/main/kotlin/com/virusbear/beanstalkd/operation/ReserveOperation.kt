@@ -24,12 +24,12 @@ class ReserveOperation(
         packet.append("\r\n")
     }
 
-    override suspend fun read(response: Response): Result<Job> =
+    override suspend fun readResponse(response: Response): Result<Job> =
         when(response) {
             is ReservedResponse -> Result.success(response.job)
             is DeadlineSoonResponse -> Result.failure(DeadlineSoonException())
             is TimedOutResponse -> Result.failure(TimedOutException())
             is NotFoundResponse -> Result.failure(NotFoundException())
-            else -> super.read(response)
+            else -> super.readResponse(response)
         }
 }

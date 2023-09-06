@@ -18,11 +18,11 @@ class ReleaseOperation(
         packet.append("release $id $priority, ${delay.inWholeSeconds}\r\n")
     }
 
-    override suspend fun read(response: Response): Result<Unit> =
+    override suspend fun readResponse(response: Response): Result<Unit> =
         when(response) {
             is ReleasedResponse -> Result.success(Unit)
             is BuriedResponse -> Result.failure(BuriedException(id))
             is NotFoundResponse -> Result.failure(NotFoundException())
-            else -> super.read(response)
+            else -> super.readResponse(response)
         }
 }

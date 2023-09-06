@@ -17,14 +17,14 @@ class PutOperation(
         packet.append("\r\n")
     }
 
-    override suspend fun read(response: Response): Result<UInt> =
+    override suspend fun readResponse(response: Response): Result<UInt> =
         when(response) {
             is InsertedResponse -> Result.success(response.id)
             is BuriedResponse -> Result.failure(BuriedException(response.id ?: UInt.MAX_VALUE))
             is ExpectedCrlfResponse -> Result.failure(ExpectedCrlfException())
             is JobTooBigResponse -> Result.failure(JobTooBigException())
             is DrainingResponse -> Result.failure(DrainingException())
-            else -> super.read(response)
+            else -> super.readResponse(response)
         }
 }
 

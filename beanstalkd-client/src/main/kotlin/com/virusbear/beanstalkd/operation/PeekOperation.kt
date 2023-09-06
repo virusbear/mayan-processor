@@ -26,7 +26,7 @@ class PeekOperation(
         packet.append("\r\n")
     }
 
-    override suspend fun read(response: Response): Result<Job> {
-        return super.read(response)
+    override suspend fun readResponse(response: Response): Result<Job> {
+        return super.readResponse(response)
     }
 }

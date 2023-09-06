@@ -22,10 +22,10 @@ class KickOperation(
         packet.append("\r\n")
     }
 
-    override suspend fun read(response: Response): Result<UInt> =
+    override suspend fun readResponse(response: Response): Result<UInt> =
         when(response) {
             is KickedResponse -> Result.success(response.count)
             is NotFoundResponse -> Result.failure(NotFoundException())
-            else -> super.read(response)
+            else -> super.readResponse(response)
         }
 }
