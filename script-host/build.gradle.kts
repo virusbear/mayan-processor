@@ -7,10 +7,6 @@ plugins {
 val coroutines_version: String by project
 val logging_version: String by project
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-}
-
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs += "-Xjsr305=strict"
