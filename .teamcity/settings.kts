@@ -52,6 +52,7 @@ object Build : BuildType({
     steps {
         gradle {
             tasks = "clean build"
+            jdkHome = "%env.JDK_17_0_x64%"
         }
     }
 
