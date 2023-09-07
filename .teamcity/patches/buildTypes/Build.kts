@@ -3,6 +3,7 @@ package patches.buildTypes
 import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.buildSteps.gradle
 import jetbrains.buildServer.configs.kotlin.buildSteps.qodana
+import jetbrains.buildServer.configs.kotlin.ideaInspections
 import jetbrains.buildServer.configs.kotlin.ui.*
 
 /*
@@ -22,6 +23,14 @@ changeBuildType(RelativeId("Build")) {
             qodana {
                 linter = jvm {
                 }
+            }
+        }
+        insert(2) {
+            ideaInspections {
+                pathToProject = "build.gradle.kts"
+                jvmArgs = "-Xmx1024m -XX:ReservedCodeCacheSize=512m"
+                targetJdkHome = "%env.JDK_17_0_x64%"
+                ideaAppHome = "%teamcity.tool.intellij.ideaIU-2023.1.2%"
             }
         }
     }
