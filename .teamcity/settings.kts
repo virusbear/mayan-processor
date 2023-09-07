@@ -3,6 +3,7 @@ import jetbrains.buildServer.configs.kotlin.StageFactory.parallel
 import jetbrains.buildServer.configs.kotlin.StageFactory.sequential
 import jetbrains.buildServer.configs.kotlin.buildFeatures.perfmon
 import jetbrains.buildServer.configs.kotlin.buildSteps.gradle
+import jetbrains.buildServer.configs.kotlin.buildSteps.qodana
 import jetbrains.buildServer.configs.kotlin.triggers.vcs
 
 /*
@@ -38,9 +39,84 @@ version = "2023.05"
 
 //IMPORTANT: only do releases in case build was successful
 
+val jdk = "%env.JDK_17_0_x64%"
+
 project {
     buildType(Build)
+    buildType(Qodana)
+    buildType(IdeaInspections)
+    buildType(IdeaDuplicates)
 }
+
+object IdeaDuplicates: BuildType({
+    name = "Idea Duplicates"
+
+    vcs {
+        root(DslContext.settingsRoot)
+    }
+
+    steps {
+        ideaDuplicates {
+            pathToProject = "build.gradle.kts"
+            jvmArgs = "-Xmx1G -XX:ReservedCodeCacheSize=512m"
+            targetJdkHome = jdk
+            ideaAppHome = "%teamcity.tool.intellij.ideaIU-2023.1.2%"
+            lowerBound = 10
+            discardCost = 0
+            distinguishMethods = true
+            distinguishTypes = true
+            distinguishLiterals = true
+            extractSubexpressions = true
+        }
+    }
+
+    features {
+        perfmon {
+        }
+    }
+})
+
+object IdeaInspections: BuildType({
+    name = "Idea Inspections"
+
+    vcs {
+        root(DslContext.settingsRoot)
+    }
+
+    steps {
+        ideaInspections {
+            pathToProject = "build.gradle.kts"
+            jvmArgs = "-Xmx1024m -XX:ReservedCodeCacheSize=512m"
+            targetJdkHome = jdk
+            ideaAppHome = "%teamcity.tool.intellij.ideaIU-2023.1.2%"
+        }
+    }
+
+    features {
+        perfmon {
+        }
+    }
+})
+
+object Qodana: BuildType({
+    name = "Qodana"
+
+    vcs {
+        root(DslContext.settingsRoot)
+    }
+
+    steps {
+        qodana {
+            linter = jvm {
+            }
+        }
+    }
+
+    features {
+        perfmon {
+        }
+    }
+})
 
 object Build : BuildType({
     name = "Build"
@@ -52,7 +128,7 @@ object Build : BuildType({
     steps {
         gradle {
             tasks = "clean build"
-            jdkHome = "%env.JDK_17_0_x64%"
+            jdkHome = jdk
         }
     }
 
