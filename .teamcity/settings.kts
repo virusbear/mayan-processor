@@ -1,5 +1,8 @@
 import jetbrains.buildServer.configs.kotlin.*
+import jetbrains.buildServer.configs.kotlin.StageFactory.parallel
+import jetbrains.buildServer.configs.kotlin.StageFactory.sequential
 import jetbrains.buildServer.configs.kotlin.buildFeatures.perfmon
+import jetbrains.buildServer.configs.kotlin.buildSteps.gradle
 import jetbrains.buildServer.configs.kotlin.triggers.vcs
 
 /*
@@ -30,13 +33,12 @@ version = "2023.05"
 //2: Nightly build of develop (only if changes were made) -> release as snapshot version
 //3: after merge on master -> release as release version -> update docker image with :latest tag
 //4: after each commit on "release" branch -> release "RCx" version -> create docker image
-//5: run qodana on every push to any branch
+//5: run qodana+detekt on every push to any branch
 //6: build any branch (only kotlin) after each push
 
 //IMPORTANT: only do releases in case build was successful
 
 project {
-
     buildType(Build)
 }
 
@@ -47,8 +49,9 @@ object Build : BuildType({
         root(DslContext.settingsRoot)
     }
 
-    triggers {
-        vcs {
+    steps {
+        gradle {
+            tasks = "clean build"
         }
     }
 
