@@ -25,6 +25,8 @@ pipeline {
     post {
         always {
             junit '**/build/test-results/**/*.xml'
+        }
+        success {
             jacoco {
                 execPattern: '**/build/jacoco/*.exec'
                 classPattern: '**/build/classes/*/main'
