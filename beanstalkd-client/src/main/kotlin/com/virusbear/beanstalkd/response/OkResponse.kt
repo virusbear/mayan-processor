@@ -14,10 +14,10 @@ class OkResponse(
             val yaml = channel.readPacket(length).readText()
             val stats = yaml.lines().filter { it != "---" && it.isNotEmpty() }.associate {
                 if(it.startsWith("- ")) {
-                    it.removePrefix("- ") to ""
+                    it.removePrefix("- ").trim().removeSurrounding("\"") to ""
                 } else {
                     val (key, value) = it.split(": ", limit = 2)
-                    key to value.removeSurrounding("\"")
+                    key.trim().removeSurrounding("\"") to value.trim().removeSurrounding("\"")
                 }
             }
             //Read last line break
