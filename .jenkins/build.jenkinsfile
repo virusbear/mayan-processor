@@ -19,19 +19,17 @@ pipeline {
                 withGradle {
                     sh "./gradlew check --no-daemon"
                 }
+                jacoco {
+                    execPattern: '**/build/jacoco/*.exec'
+                    classPattern: '**/build/classes/*/main'
+                    sourcePattern: '**/src/main'
+                }
             }
         }
     }
     post {
         always {
             junit '**/build/test-results/**/*.xml'
-        }
-        success {
-            jacoco {
-                execPattern: '**/build/jacoco/*.exec'
-                classPattern: '**/build/classes/*/main'
-                sourcePattern: '**/src/main'
-            }
         }
     }
 }
