@@ -1,0 +1,14 @@
+pipeline {
+    agent any
+
+    stages {
+        stage("Build") {
+            withGradle {
+                steps {
+                    sh 'chmod +x gradlew'
+                    sh './gradlew clean build'
+                }
+            }
+        }
+    }
+}
