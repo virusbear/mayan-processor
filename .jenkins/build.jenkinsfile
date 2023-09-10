@@ -14,5 +14,17 @@ pipeline {
                 }
             }
         }
+        stage("Test") {
+            steps {
+                withGradle {
+                    sh "./gradlew check --no-daemon"
+                }
+            }
+        }
+    }
+    post {
+        always {
+            junit 'build/reports/**/*.xml'
+        }
     }
 }
