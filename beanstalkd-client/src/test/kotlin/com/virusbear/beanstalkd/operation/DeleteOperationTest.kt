@@ -5,7 +5,7 @@ import com.virusbear.beanstalkd.response.DeletedResponse
 import com.virusbear.beanstalkd.response.NotFoundResponse
 import io.ktor.utils.io.core.*
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Test
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
