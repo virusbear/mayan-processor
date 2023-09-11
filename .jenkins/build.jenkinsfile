@@ -24,6 +24,9 @@ pipeline {
     }
     post {
         always {
+            //TODO:
+            //Fails if build fails but does not show build as failed
+            //Only run if build stage succeeded somehow
             junit '**/build/test-results/**/*.xml'
             jacoco(
                 execPattern: '**/build/jacoco/*.exec',

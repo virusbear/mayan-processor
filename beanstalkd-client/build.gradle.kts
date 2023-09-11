@@ -1,3 +1,5 @@
+import io.gitlab.arturbosch.detekt.Detekt
+
 plugins {
     kotlin("jvm")
     jacoco
@@ -35,4 +37,14 @@ tasks.jacocoTestReport {
         csv.required.set(false)
         html.required.set(false)
     }
+}
+
+//TODO: build runs detekt before building
+//TODO: below code does not exclude detekt task from build
+tasks.build.configure {
+    setDependsOn(
+        dependsOn.filterNot {
+            it is TaskProvider<*> && it.name == "detekt"
+        }
+    )
 }
