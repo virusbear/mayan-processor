@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm")
     jacoco
+    id("io.gitlab.arturbosch.detekt")
 }
 
 val coroutines_version: String by project
