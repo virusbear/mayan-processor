@@ -30,7 +30,7 @@ pipeline {
                 classPattern: '**/build/classes/*/main',
                 sourcePattern: '**/src/main'
             )
-            recordIssues tool: checkStyle(pattern: 'detekt.xml')
+            recordIssues tools: [checkStyle(pattern: 'detekt.xml')]
         }
     }
 }
