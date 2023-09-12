@@ -39,12 +39,12 @@ tasks.jacocoTestReport {
     }
 }
 
-//TODO: build runs detekt before building
-//TODO: below code does not exclude detekt task from build
-tasks.build.configure {
-    setDependsOn(
-        dependsOn.filterNot {
-            it is TaskProvider<*> && it.name == "detekt"
-        }
-    )
+detekt {
+    reports {
+        html.required.set(false)
+        md.required.set(false)
+        sarif.required.set(false)
+        txt.required.set(false)
+        xml.required.set(true)
+    }
 }
