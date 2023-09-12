@@ -39,6 +39,11 @@ tasks.jacocoTestReport {
     }
 }
 
+tasks.detekt.configure {
+    exclude("**/test/**", "**/androidTest/**", "**/commonTest/**", "**/jvmTest/**", "**/androidUnitTest/**", "**/androidInstrumentedTest/**", "**/jsTest/**", "**/iosTest/**")
+}
+
 detekt {
     config.setFrom(rootDir.resolve("config/detekt/detekt.yml"))
+    parallel = true
 }
