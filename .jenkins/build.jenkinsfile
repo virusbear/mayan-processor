@@ -47,7 +47,7 @@ pipeline {
 
                     post {
                         always {
-                            recordIssues tools: [checkStyle(pattern: '**/build/reports/detekt/detekt.xml')]
+                            recordIssues enabledForFailure: true, tools: [checkStyle(pattern: '**/build/reports/detekt/detekt.xml')]
                         }
                     }
                 }

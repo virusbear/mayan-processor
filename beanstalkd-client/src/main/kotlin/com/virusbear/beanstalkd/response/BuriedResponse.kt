@@ -3,7 +3,7 @@ package com.virusbear.beanstalkd.response
 import io.ktor.utils.io.*
 
 data class BuriedResponse(
-    val id: UInt?
+    val id: UInt? = null
 ): Response {
     companion object: ResponseType {
         override val code: String = "BURIED"
