@@ -3,7 +3,7 @@ package com.virusbear.beanstalkd.operation
 import com.virusbear.beanstalkd.NotFoundException
 import com.virusbear.beanstalkd.response.NotFoundResponse
 import com.virusbear.beanstalkd.response.PausedResponse
-import io.ktor.utils.io.core.*
+import com.virusbear.beanstalkd.writePacketAsText
 import kotlinx.coroutines.runBlocking
 import kotlin.test.*
 import kotlin.time.Duration
@@ -16,7 +16,7 @@ class PausedOperationTest {
         val delay = 10.seconds
         val op = PausedOperation(tube, delay)
 
-        val packet = BytePacketBuilder().apply { op.write(this) }.build().readText()
+        val packet = op.writePacketAsText()
 
         assertEquals("pause-tube $tube ${delay.inWholeSeconds}\r\n", packet)
     }

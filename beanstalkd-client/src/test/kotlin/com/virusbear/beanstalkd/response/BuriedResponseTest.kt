@@ -1,5 +1,6 @@
 package com.virusbear.beanstalkd.response
 
+import com.virusbear.beanstalkd.readResponse
 import io.ktor.utils.io.*
 import kotlinx.coroutines.runBlocking
 import kotlin.test.*

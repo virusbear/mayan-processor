@@ -3,6 +3,7 @@ package com.virusbear.beanstalkd.operation
 import com.virusbear.beanstalkd.NotFoundException
 import com.virusbear.beanstalkd.response.DeletedResponse
 import com.virusbear.beanstalkd.response.NotFoundResponse
+import com.virusbear.beanstalkd.writePacketAsText
 import io.ktor.utils.io.core.*
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
@@ -17,7 +18,7 @@ class DeleteOperationTest {
 
         val op = DeleteOperation(id)
 
-        val packet = BytePacketBuilder().apply { op.write(this) }.build().readText()
+        val packet = op.writePacketAsText()
 
         assertEquals("delete $id\r\n", packet)
     }

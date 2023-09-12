@@ -3,6 +3,7 @@ package com.virusbear.beanstalkd.operation
 import com.virusbear.beanstalkd.NotFoundException
 import com.virusbear.beanstalkd.response.KickedResponse
 import com.virusbear.beanstalkd.response.NotFoundResponse
+import com.virusbear.beanstalkd.writePacketAsText
 import io.ktor.utils.io.core.*
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.assertThrows
@@ -15,7 +16,7 @@ class KickOperationTest {
         val op = KickOperation()
 
         assertThrows<IllegalStateException> {
-            BytePacketBuilder().apply { op.write(this) }
+            op.writePacketAsText()
         }
     }
 
@@ -24,7 +25,7 @@ class KickOperationTest {
         val bound = 831836u
         val op = KickOperation(bound = bound)
 
-        val packet = BytePacketBuilder().apply { op.write(this) }.build().readText()
+        val packet = op.writePacketAsText()
 
         assertEquals("kick $bound\r\n", packet)
     }
@@ -34,7 +35,7 @@ class KickOperationTest {
         val id = 638287u
         val op = KickOperation(id = id)
 
-        val packet = BytePacketBuilder().apply { op.write(this) }.build().readText()
+        val packet = op.writePacketAsText()
 
         assertEquals("kick-job $id\r\n", packet)
     }
@@ -45,7 +46,7 @@ class KickOperationTest {
         val bound = 247533u
         val op = KickOperation(bound = bound, id = id)
 
-        val packet = BytePacketBuilder().apply { op.write(this) }.build().readText()
+        val packet = op.writePacketAsText()
 
         assertEquals("kick $bound\r\n", packet)
     }

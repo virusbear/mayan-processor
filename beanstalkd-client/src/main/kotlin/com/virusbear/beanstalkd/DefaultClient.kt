@@ -4,6 +4,7 @@ import com.virusbear.beanstalkd.operation.*
 import com.virusbear.beanstalkd.response.*
 import kotlin.time.Duration
 
+@Suppress("SwallowedException")
 class DefaultClient(
     host: String = "localhost",
     port: Int = 11300

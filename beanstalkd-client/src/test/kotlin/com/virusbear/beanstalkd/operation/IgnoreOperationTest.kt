@@ -3,6 +3,7 @@ package com.virusbear.beanstalkd.operation
 import com.virusbear.beanstalkd.NotIgnoredException
 import com.virusbear.beanstalkd.response.NotIgnoredResponse
 import com.virusbear.beanstalkd.response.WatchingResponse
+import com.virusbear.beanstalkd.writePacketAsText
 import io.ktor.utils.io.core.*
 import kotlinx.coroutines.runBlocking
 import kotlin.test.assertEquals
@@ -17,7 +18,7 @@ class IgnoreOperationTest {
 
         val op = IgnoreOperation(tube)
 
-        val packet = BytePacketBuilder().apply { op.write(this) }.build().readText()
+        val packet = op.writePacketAsText()
 
         assertEquals("ignore default\r\n", packet)
     }

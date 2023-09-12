@@ -1,10 +1,10 @@
 package com.virusbear.beanstalkd.response
 
+import com.virusbear.beanstalkd.readResponse
 import io.ktor.utils.io.*
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertIs
 
 class InsertedResponseTest {
     @Test

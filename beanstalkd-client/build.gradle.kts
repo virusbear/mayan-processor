@@ -40,13 +40,5 @@ tasks.jacocoTestReport {
 }
 
 detekt {
-    ignoreFailures = true
     config.setFrom(rootDir.resolve("config/detekt/detekt.yml"))
-    reports {
-        html.required.set(false)
-        md.required.set(false)
-        sarif.required.set(false)
-        txt.required.set(false)
-        xml.required.set(true)
-    }
 }

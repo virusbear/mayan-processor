@@ -3,6 +3,7 @@ package com.virusbear.beanstalkd.operation
 import com.virusbear.beanstalkd.NotFoundException
 import com.virusbear.beanstalkd.response.BuriedResponse
 import com.virusbear.beanstalkd.response.NotFoundResponse
+import com.virusbear.beanstalkd.writePacketAsText
 import io.ktor.utils.io.core.*
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
@@ -18,7 +19,7 @@ class BuryOperationTest {
 
         val op = BuryOperation(id, priority)
 
-        val packet = BytePacketBuilder().apply { op.write(this) }.build().readText()
+        val packet = op.writePacketAsText()
 
         assertEquals("bury $id $priority\r\n", packet)
     }
