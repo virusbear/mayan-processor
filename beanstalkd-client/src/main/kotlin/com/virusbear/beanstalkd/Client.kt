@@ -3,8 +3,14 @@ package com.virusbear.beanstalkd
 import java.io.Closeable
 import kotlin.time.Duration
 
+@Suppress("TooManyFunctions")
 interface Client: Closeable {
-    suspend fun put(data: ByteArray, priority: UInt = 0u, delay: Duration = Duration.ZERO, ttr: Duration = Duration.INFINITE): UInt
+    suspend fun put(
+        data: ByteArray,
+        priority: UInt = 0u,
+        delay: Duration = Duration.ZERO,
+        ttr: Duration = Duration.INFINITE
+    ): UInt
     suspend fun use(tube: String)
     suspend fun reserve(): Job
     suspend fun reserveWithTimeout(timeout: Duration): Job
