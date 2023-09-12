@@ -40,6 +40,7 @@ tasks.jacocoTestReport {
 }
 
 detekt {
+    ignoreFailures = false
     reports {
         html.required.set(false)
         md.required.set(false)
