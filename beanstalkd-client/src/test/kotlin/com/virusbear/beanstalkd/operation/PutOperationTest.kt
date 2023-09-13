@@ -3,10 +3,7 @@ package com.virusbear.beanstalkd.operation
 import com.virusbear.beanstalkd.*
 import com.virusbear.beanstalkd.response.*
 import kotlinx.coroutines.runBlocking
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertIs
-import kotlin.test.assertNotNull
+import kotlin.test.*
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
