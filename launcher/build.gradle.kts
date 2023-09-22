@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm")
+    application
 }
 
 val coroutines_version: String by project
@@ -17,4 +18,8 @@ dependencies {
     implementation(project(":worker"))
     implementation(project(":mayan-client"))
     implementation(project(":beanstalkd-client"))
+}
+
+application {
+    mainClass.set("com.virusbear.mayan.launcher.LauncherKt")
 }
