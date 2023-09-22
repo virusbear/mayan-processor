@@ -1,8 +1,8 @@
 package com.virusbear.mayan.launcher.beanstalkd
 
-import com.virusbear.beanstalkd.Client
-import com.virusbear.beanstalkd.Job
-import com.virusbear.beanstalkd.TimedOutException
+import com.virusbear.beanstalkt.Client
+import com.virusbear.beanstalkt.Job
+import com.virusbear.beanstalkt.TimedOutException
 import com.virusbear.mayan.processor.worker.MayanTask
 import com.virusbear.mayan.processor.worker.MayanTaskIterator
 import kotlin.time.Duration.Companion.seconds

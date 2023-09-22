@@ -1,5 +1,3 @@
-import io.gitlab.arturbosch.detekt.Detekt
-
 plugins {
     kotlin("jvm")
     jacoco
@@ -23,9 +21,6 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
-}
-
-tasks.test {
     finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
 }
 
@@ -37,10 +32,6 @@ tasks.jacocoTestReport {
         csv.required.set(false)
         html.required.set(false)
     }
-}
-
-tasks.detekt.configure {
-    exclude("**/test/**", "**/androidTest/**", "**/commonTest/**", "**/jvmTest/**", "**/androidUnitTest/**", "**/androidInstrumentedTest/**", "**/jsTest/**", "**/iosTest/**")
 }
 
 detekt {
