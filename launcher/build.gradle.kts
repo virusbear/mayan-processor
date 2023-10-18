@@ -17,4 +17,9 @@ dependencies {
     implementation(project(":entrypoint"))
     implementation(project(":worker"))
     implementation(project(":mayan-client"))
+    implementation(project(":beanstalkd-client"))
+}
+
+application {
+    mainClass.set("com.virusbear.mayan.launcher.LauncherKt")
 }
