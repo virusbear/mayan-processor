@@ -1,6 +1,6 @@
 package com.virusbear.mayan.launcher.beanstalkd
 
-import com.virusbear.beanstalkd.Client
+import com.virusbear.beanstalkt.Client
 import com.virusbear.mayan.processor.worker.MayanTask
 
 class BeanstalkdTask(

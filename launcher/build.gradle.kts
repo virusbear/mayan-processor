@@ -11,10 +11,10 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logback_version")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version")
+    implementation("com.virusbear:beanstalkt:1.1.0")
 
     implementation(project(":configuration"))
     implementation(project(":entrypoint"))
     implementation(project(":worker"))
     implementation(project(":mayan-client"))
-    implementation(project(":beanstalkd-client"))
 }

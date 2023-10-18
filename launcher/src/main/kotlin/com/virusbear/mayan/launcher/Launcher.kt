@@ -1,6 +1,6 @@
 package com.virusbear.mayan.launcher
 
-import com.virusbear.beanstalkd.DefaultClient
+import com.virusbear.beanstalkt.DefaultClient
 import com.virusbear.mayan.client.MayanClient
 import com.virusbear.mayan.config.ConfigLoader
 import com.virusbear.mayan.entrypoint.EntryPoint
