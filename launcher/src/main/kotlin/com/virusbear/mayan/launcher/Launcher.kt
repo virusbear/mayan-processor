@@ -26,7 +26,6 @@ internal object Launcher {
         val config = readConfig(args)
 
         supervisorScope {
-            //TODO: Get dependencies
             val client = MayanClient(config.mayan.host, config.mayan.user, config.mayan.password)
 
             for(profile in config.profile) {
@@ -49,8 +48,6 @@ internal object Launcher {
                         config.queue.queue?.let { beanstalkdClient.watch(it) }
                         launchRestarting(name= "Worker") { Worker(queue, config.worker, client) }
                     }
-                    //Profile.Ocr -> TODO("Not yet implemented!")
-                    else -> TODO()
                 }
             }
         }
@@ -88,7 +85,7 @@ fun CoroutineScope.launchRestarting(
         try {
             block()
         } catch (ex: Exception) {
-            logger.error(ex) { ex.message }
+            logger.error(ex) { "Coroutine ${coroutineContext[CoroutineName]} failed with message ${ex.message}" }
             delay(delay)
         }
     }

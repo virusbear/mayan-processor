@@ -28,7 +28,7 @@ class BeanstalkdTaskIterator(
     }
 
     override suspend fun next(): MayanTask =
-        next ?: error("No next available for iterator")
+        next ?: error("No more task available")
 
     private suspend fun Job.asMayanTask(client: Client): MayanTask =
         BeanstalkdTask(
