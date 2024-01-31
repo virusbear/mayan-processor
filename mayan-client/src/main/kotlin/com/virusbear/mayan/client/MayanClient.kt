@@ -17,6 +17,8 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json as J
 
+//TODO: MayanClient really needs some attention
+//TODO: shall we create a completely separate module that implements the mayan client?
 class MayanClient(
     private val host: String,
     user: String,

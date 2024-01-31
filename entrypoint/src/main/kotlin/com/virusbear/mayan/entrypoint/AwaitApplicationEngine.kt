@@ -1,15 +1,17 @@
 package com.virusbear.mayan.entrypoint
 
+import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
 
 suspend fun ApplicationEngine.await() =
-    suspendCancellableCoroutine<Unit> {
-        addShutdownHook {
-            it.cancel()
+    suspendCancellableCoroutine { cont ->
+        environment.monitor.subscribe(ApplicationStopped) {
+            cont.resume(Unit)
         }
 
-        it.invokeOnCancellation {
+        cont.invokeOnCancellation {
             stop()
         }
     }
