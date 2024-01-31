@@ -1,44 +1,35 @@
 package com.virusbear.mayan.client
 
-import com.virusbear.mayan.client.model.*
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.engine.cio.*
-import io.ktor.client.plugins.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.request.*
-import io.ktor.http.*
-import io.ktor.http.ContentType
-import io.ktor.serialization.kotlinx.json.*
+import com.virusbear.mayan.api.client.infrastructure.ApiClient
+import com.virusbear.mayan.client.internal.BasicAuthorizationInterceptor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json as J
+import okhttp3.OkHttpClient
+import okhttp3.Response
+import java.util.*
 
 //TODO: MayanClient really needs some attention
 //TODO: shall we create a completely separate module that implements the mayan client?
 class MayanClient(
-    private val host: String,
+    host: String,
     user: String,
     password: String
 ) {
-    private val client = HttpClient(CIO) {
-        install(ContentNegotiation) {
-            json(J {
-                isLenient = true
-                ignoreUnknownKeys = true
-            })
-        }
+    private val api = ApiClient("$host/api/v4/", createHttpClient(user, password))
 
-        defaultRequest {
-            url(this@MayanClient.host)
-            url {
-                appendPathSegments("api", "v4", "")
-            }
-            basicAuth(user, password)
-        }
+    private fun createHttpClient(username: String, password: String): OkHttpClient =
+        OkHttpClient.Builder()
+            .addInterceptor(BasicAuthorizationInterceptor(username, password))
+            .build()
+
+    val documentClient: DocumentClient
+        get() = DocumentClient(api)
+
+    class DocumentClient(
+        private val api: ApiClient
+    ): BaseApi {
+
     }
 
     //TODO: cache information like metadata types, document types etc. to increase performance.
