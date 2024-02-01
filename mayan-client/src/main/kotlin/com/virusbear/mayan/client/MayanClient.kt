@@ -1,7 +1,11 @@
 package com.virusbear.mayan.client
 
+import com.virusbear.mayan.api.client.api.DocumentsApi
 import com.virusbear.mayan.api.client.infrastructure.ApiClient
+import com.virusbear.mayan.api.client.model.CabinetsDocumentsList200Response
+import com.virusbear.mayan.api.client.model.Document
 import com.virusbear.mayan.client.internal.BasicAuthorizationInterceptor
+import com.virusbear.mayan.client.model.Document
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
@@ -16,27 +20,34 @@ class MayanClient(
     user: String,
     password: String
 ) {
-    private val api = ApiClient("$host/api/v4/", createHttpClient(user, password))
+    data class ApiConfig(val basePath: String, val client: OkHttpClient)
+    private val config = ApiConfig("$host/api/v4/", createHttpClient(user, password))
 
     private fun createHttpClient(username: String, password: String): OkHttpClient =
         OkHttpClient.Builder()
             .addInterceptor(BasicAuthorizationInterceptor(username, password))
             .build()
 
-    val documentClient: DocumentClient
-        get() = DocumentClient(api)
-
     class DocumentClient(
-        private val api: ApiClient
-    ): BaseApi {
+        private val config: ApiConfig
+    ) {
+        private val api = DocumentsApi(config.basePath, config.client)
 
+        suspend fun document(id: Int): Document =
+            Document(config, api, api.documentsRead(id.toString()))
+
+        suspend fun indexes(id: Int): Indexes =
+            api.documentsIndexesList(id.toString())
     }
+
+    val documents: DocumentClient
+        get() = DocumentClient(config)
 
     //TODO: cache information like metadata types, document types etc. to increase performance.
     //TODO: have this information with a cache time of about 5min. maybe configurable using yaml parameter
 
     suspend fun document(id: Int): Document =
-        client.get("documents/$id").body()
+        DocumentsApi(api.baseUrl, api.client).documentsRead(id.toString())
 
     suspend fun file(documentId: Int, fileId: Int): DocumentFile =
         client.get("documents/$documentId/files/$fileId").body()

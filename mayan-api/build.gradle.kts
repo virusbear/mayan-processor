@@ -1,4 +1,11 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+
+import org.openapitools.codegen.languages.*
+
+class b: org.openapitools.codegen.languages.KotlinClientCodegen() {
+
+}
 
 plugins {
     kotlin("jvm")
@@ -27,6 +34,8 @@ openApiGenerate {
     modelPackage.set("$apiRootName.model")
     packageName.set(apiRootName)
 
+    modelNamePrefix = "Api"
+
     configOptions = mapOf(
         "enumPropertyNaming" to "PascalCase",
         "sortParamsByRequiredFlag" to "true",
@@ -45,3 +54,8 @@ sourceSets {
 tasks.withType<KotlinCompile>().configureEach {
     dependsOn("openApiGenerate")
 }
+
+tasks.withType<GenerateTask>().configureEach {
+    dependsOn("clean")
+}
+
