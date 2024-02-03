@@ -7,6 +7,15 @@ class TagClient(
     val client: MayanClient,
     api: Api
 ): BaseClient(api) {
+    suspend fun listTags(): List<Tag> =
+        getPaged({
+            val response = api.tags.tagsList(page = it)
+
+            response.results to response.next
+        }) {
+            Tag(this, it)
+        }
+
     suspend fun getTag(id: Int): Tag =
         Tag(this, api.tags.tagsRead(id.toString()))
 

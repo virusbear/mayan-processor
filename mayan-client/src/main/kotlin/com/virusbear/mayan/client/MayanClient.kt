@@ -27,4 +27,8 @@ class MayanClient(
     val tags: TagClient by lazy {
         TagClient(this, api)
     }
+
+    val cabinets: CabinetClient by lazy {
+        CabinetClient(this, api)
+    }
 }

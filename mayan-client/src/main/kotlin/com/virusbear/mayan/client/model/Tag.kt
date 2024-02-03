@@ -10,6 +10,12 @@ class Tag(
     private val api: ApiTag
 ) {
     companion object {
+        suspend fun all(client: MayanClient): List<Tag> =
+            client.tags.listTags()
+
+        suspend fun get(client: MayanClient, id: Int): Tag =
+            client.tags.getTag(id)
+
         suspend fun create(client: MayanClient, color: String, label: String): Tag =
             client.tags.create(ApiTag(color, label, null, null, null))
     }
