@@ -1,137 +1,123 @@
 package com.virusbear.mayan.client.model
 
-import com.virusbear.mayan.api.client.api.DocumentTypesApi
 import com.virusbear.mayan.api.client.model.ApiDocument
-import com.virusbear.mayan.client.Api
 import com.virusbear.mayan.client.DocumentClient
-import org.w3c.dom.DocumentType
 import java.net.URI
 import java.time.OffsetDateTime
 import java.util.*
 
 class Document(
     private val client: DocumentClient,
-    private val document: ApiDocument
+    private val api: ApiDocument
 ) {
-    // type fields
+    //region fields
     val dateTimeCreated: OffsetDateTime
-        get() = document.datetimeCreated!!
+        get() = api.datetimeCreated!!
 
     val description: String
-        get() = document.description ?: ""
+        get() = api.description ?: ""
 
     val changeTypeUrl: URI
-        get() = document.documentChangeTypeUrl!!
+        get() = api.documentChangeTypeUrl!!
 
     val type: DocumentType
-        get() = DocumentType(client.api.documentTypes, document.documentType!!)
+        get() = DocumentType(client.client.documentTypes, api.documentType!!)
 
     val latestFile: DocumentFile
-        get() = DocumentFile(client.api.documentFiles, document.fileLatest!!)
+        get() = DocumentFile(client.api.documentFiles, api.fileLatest!!)
 
     val latestFileUrl: URI
-        get() = document.fileListUrl!!
+        get() = api.fileListUrl!!
 
     val id: Int
-        get() = document.id!!
+        get() = this.id
 
     val label: String
-        get() = document.label!!
+        get() = api.label!!
 
     val language: String
-        get() = document.language!!
+        get() = api.language!!
 
     val url: URI
-        get() = document.url!!
+        get() = api.url!!
 
     val uuid: UUID
-        get() = document.uuid!!
+        get() = api.uuid!!
 
     val activeVersion: DocumentVersion
-        get() = DocumentVersion(client.api.documentVersions, document.versionActive!!)
+        get() = DocumentVersion(client.api.documentVersions, api.versionActive!!)
 
     val versionListUrl: URI
-        get() = document.versionListUrl!!
+        get() = api.versionListUrl!!
+    //endregion
 
-    // type operations
+    //region navigate_multiple
+    suspend fun listCabinets(): List<Cabinet> =
+        client.listCabinets(this.id)
 
-    suspend fun cabinets(): List<Cabinet> =
-        client.cabinets(document.id!!)
+    suspend fun listComments(): List<Comment> =
+        client.listComments(this.id)
 
-    suspend fun checkoutState(): DocumentCheckout =
-        client.checkoutState(document.id!!)
+    suspend fun listDuplicates(): List<DuplicateTargetDocument> =
+        client.listDuplicates(this.id)
 
+    suspend fun listIndexes(): List<Index> =
+        client.listIndexes(this.id)
+
+    suspend fun listMetadata(): List<DocumentMetadata> =
+        client.listMetadata((this.id))
+
+    suspend fun listFiles(): List<DocumentFile> =
+        client.listFiles(this.id)
+
+    suspend fun listResolvedSmartLinks(): List<ResolvedSmartLink> =
+        client.listResolvedSmartLinks(this.id)
+
+    suspend fun listResolvedWebLinks(): List<ResolvedWebLink> =
+        client.listResolvedWebLinks(this.id)
+
+    suspend fun listSignatureCaptures(): List<SignatureCapture> =
+        client.listSignatureCaptures(this.id)
+
+    suspend fun listTags(): List<Tag> =
+        client.listTags(this.id)
+
+    suspend fun listVersions(): List<DocumentVersion> =
+        client.listVersions(this.id)
+    //endregion
+
+    //region navigate_single
+    suspend fun getCheckoutState(): DocumentCheckout =
+        client.getCheckoutState(this.id)
+
+    suspend fun getComment(id: Int): Comment =
+        client.getComment(this.id, id)
+
+    suspend fun getFile(id: Int): DocumentFile =
+        client.getFile(this.id, id)
+
+    suspend fun getMetadata(id: Int): DocumentMetadata =
+        client.getMetadata(this.id, id)
+
+    suspend fun getResolvedSmartLink(id: Int): ResolvedSmartLink =
+        client.getResolvedSmartLink(this.id, id)
+
+    suspend fun getResolvedWebLink(id: Int): ResolvedWebLink =
+        client.getResolvedWebLink(this.id, id)
+
+    suspend fun getSignatureCapture(id: Int): SignatureCapture =
+        client.getSignatureCapture(this.id, id)
+
+    suspend fun getVersion(id: Int): DocumentVersion =
+        client.getVersion(this.id, id)
+    //endregion
+
+    //region operations
     suspend fun checkin() {
-        client.checkin(document.id!!)
+        client.deleteCheckout(this.id)
     }
 
-    suspend fun comments(): List<Comment> =
-        client.comments(document.id!!)
-
-    suspend fun comment(id: Int): Comment =
-        client.comment(document.id!!, id)
-
-    suspend fun duplicates(): DuplicateTargetDocument {
-        TODO("Not yet implemented")
-    }
-
-    suspend fun files(): List<DocumentFile> {
-        TODO("Not yet implemented")
-    }
-
-    suspend fun file(id: Int): DocumentFile {
-        TODO("Not yet implemented")
-    }
-
-    suspend fun indexes(): List<Index> {
-        TODO("Not yet implemented")
-    }
-
-    suspend fun metadata(): List<DocumentMetadata> {
-        TODO("Not yet implemented")
-    }
-
-    suspend fun metadata(id: Int): DocumentMetadata {
-        TODO("Not yet implemented")
-    }
-
-    suspend fun ocr() {
-        TODO("Not yet implemented")
-    }
-
-    suspend fun resolvedSmartLinks(): List<ResolvedSmartLink> {
-        TODO("Not yet implemented")
-    }
-
-    suspend fun resolvedSmartLink(id: Int): ResolvedSmartLink {
-        TODO("Not yet implemented")
-    }
-
-    suspend fun resolvedWebLinks(): List<ResolvedWebLink> {
-        TODO("Not yet implemented")
-    }
-
-    suspend fun resolvedWebLink(id: Int): ResolvedWebLink {
-        TODO("Not yet implemented")
-    }
-
-    suspend fun signatureCaptures(): List<SignatureCapture> {
-        TODO("Not yet implemented")
-    }
-
-    suspend fun signatureCapture(id: Int): SignatureCapture {
-        TODO("Not yet implemented")
-    }
-
-    suspend fun tags(): List<Tag> {
-        TODO("Not yet implemented")
-    }
-
-    suspend fun versions(): List<DocumentVersion> {
-        TODO("Not yet implemented")
-    }
-
-    suspend fun version(id: Int): DocumentVersion {
-        TODO("Not yet implemented")
-    }
+    suspend fun submitForOcr() =
+        client.createOcrSubmit(this.id)
+    //endregion
 }

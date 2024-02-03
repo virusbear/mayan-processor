@@ -17,19 +17,14 @@ class MayanClient(
             .build()
 
     val documents: DocumentClient by lazy {
-        DocumentClient(api)
+        DocumentClient(this, api)
     }
 
-    val indexes: IndexClient by lazy {
-        IndexClient(api)
+    val documentTypes: DocumentTypeClient by lazy {
+        DocumentTypeClient(this, api)
     }
-}
 
-class Api(
-    private val basePath: String,
-    private val client: OkHttpClient
-) {
-    val documents: DocumentsApi by lazy {
-        DocumentsApi(basePath, client)
+    val tags: TagClient by lazy {
+        TagClient(this, api)
     }
 }
