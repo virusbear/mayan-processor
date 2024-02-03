@@ -1,9 +1,6 @@
 package com.virusbear.mayan.client
 
-import com.virusbear.mayan.api.client.api.CabinetsApi
-import com.virusbear.mayan.api.client.api.DocumentTypesApi
-import com.virusbear.mayan.api.client.api.DocumentsApi
-import com.virusbear.mayan.api.client.api.TagsApi
+import com.virusbear.mayan.api.client.api.*
 import okhttp3.OkHttpClient
 
 class Api(
@@ -24,5 +21,9 @@ class Api(
 
     val cabinets: CabinetsApi by lazy {
         CabinetsApi(basePath, client)
+    }
+
+    val checkouts: CheckoutsApi by lazy {
+        CheckoutsApi(basePath, client)
     }
 }

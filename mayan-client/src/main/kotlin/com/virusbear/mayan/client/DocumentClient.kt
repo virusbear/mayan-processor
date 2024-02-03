@@ -1,7 +1,6 @@
 package com.virusbear.mayan.client
 
 import com.virusbear.mayan.client.model.*
-import java.security.Signature
 
 class DocumentClient(
     val client: MayanClient,
@@ -22,9 +21,9 @@ class DocumentClient(
             Cabinet(api.cabinets, it)
         }
 
-    suspend fun getCheckoutState(id: Int): DocumentCheckout =
+    suspend fun getCheckoutState(id: Int): Checkout =
         api.documents.documentsCheckoutRead(id.toString()).let {
-            DocumentCheckout(api.checkouts, it)
+            Checkout(api.checkouts, it)
         }
 
     suspend fun deleteCheckout(id: Int) {

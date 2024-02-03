@@ -87,7 +87,7 @@ class Document(
     //endregion
 
     //region navigate_single
-    suspend fun getCheckoutState(): DocumentCheckout =
+    suspend fun getCheckoutState(): Checkout =
         client.getCheckoutState(this.id)
 
     suspend fun getComment(id: Int): Comment =

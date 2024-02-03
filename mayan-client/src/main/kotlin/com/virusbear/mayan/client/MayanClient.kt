@@ -1,6 +1,5 @@
 package com.virusbear.mayan.client
 
-import com.virusbear.mayan.api.client.api.DocumentsApi
 import com.virusbear.mayan.client.internal.BasicAuthorizationInterceptor
 import okhttp3.OkHttpClient
 
@@ -30,5 +29,13 @@ class MayanClient(
 
     val cabinets: CabinetClient by lazy {
         CabinetClient(this, api)
+    }
+
+    val comments: CommentClient by lazy {
+        CommentClient(this, api)
+    }
+
+    val checkouts: CheckoutClient by lazy {
+        CheckoutClient(this, api)
     }
 }
