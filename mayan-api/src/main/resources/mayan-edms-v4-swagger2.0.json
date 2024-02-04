@@ -215,9 +215,13 @@
         "operationId": "app_image_error_image_read",
         "description": "Returns an image representation of the selected app image error.",
         "parameters": [],
+        "produces": ["application/octet-stream"],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
           }
         },
         "tags": [
@@ -418,9 +422,13 @@
         "operationId": "assets_image_read",
         "description": "Returns an image representation of the selected asset.",
         "parameters": [],
+        "produces": ["application/octet-stream"],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
           }
         },
         "tags": [
@@ -2973,9 +2981,13 @@
         "operationId": "documents_files_download_read",
         "description": "Download a document file.",
         "parameters": [],
+        "produces": ["application/octet-stream"],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
           }
         },
         "tags": [
@@ -3157,9 +3169,13 @@
         "operationId": "documents_files_pages_image_read",
         "description": "Returns an image representation of the selected document.",
         "parameters": [],
+        "produces": ["application/octet-stream"],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
           }
         },
         "tags": [
@@ -4365,9 +4381,13 @@
         "operationId": "documents_signature_captures_image_read",
         "description": "Returns an image representation of the selected signature capture.",
         "parameters": [],
+        "produces": ["application/octet-stream"],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
           }
         },
         "tags": [
@@ -5081,9 +5101,13 @@
         "operationId": "documents_versions_pages_image_read",
         "description": "Returns an image representation of the selected document version page.",
         "parameters": [],
+        "produces": ["application/octet-stream"],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
           }
         },
         "tags": [
@@ -8377,9 +8401,13 @@
         "operationId": "objects_image_read",
         "description": "Returns an image representation of the selected content object.",
         "parameters": [],
+        "produces": ["application/octet-stream"],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
           }
         },
         "tags": [
@@ -10378,9 +10406,13 @@
         "operationId": "trashed_documents_image_read",
         "description": "Returns an image representation of the selected trashed document.",
         "parameters": [],
+        "produces": ["application/octet-stream"],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
           }
         },
         "tags": [
@@ -11417,9 +11449,13 @@
         "operationId": "workflow_templates_image_read",
         "description": "Returns an image representation of the selected workflow template.",
         "parameters": [],
+        "produces": ["application/octet-stream"],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
           }
         },
         "tags": [
