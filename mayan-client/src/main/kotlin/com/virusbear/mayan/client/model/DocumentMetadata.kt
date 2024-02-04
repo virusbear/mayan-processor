@@ -15,7 +15,7 @@ class DocumentMetadata(
         get() = api.id!!
 
     val metadataType: MetadataType
-        get() = MetadataType(client.metadataTypes, api.metadataType!!)
+        get() = MetadataType(api.metadataType!!)
 
     val url: String
         get() = api.url!!

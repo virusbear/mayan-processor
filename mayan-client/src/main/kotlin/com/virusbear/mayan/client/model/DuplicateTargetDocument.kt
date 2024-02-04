@@ -48,7 +48,7 @@ class DuplicateTargetDocument(
         get() = api.uuid!!
 
     val versionActive: DocumentVersion
-        get() = DocumentVersion(client.documentVersions, api.versionActive!!)
+        get() = DocumentVersion(api.versionActive!!)
 
     val versionListUrl: URI
         get() = api.versionListUrl!!

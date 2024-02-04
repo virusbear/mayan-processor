@@ -45,7 +45,7 @@ class Document(
         get() = api.uuid!!
 
     val activeVersion: DocumentVersion
-        get() = DocumentVersion(client.api.documentVersions, api.versionActive!!)
+        get() = DocumentVersion(api.versionActive!!)
 
     val versionListUrl: URI
         get() = api.versionListUrl!!
