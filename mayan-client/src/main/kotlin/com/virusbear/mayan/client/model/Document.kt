@@ -24,7 +24,7 @@ class Document(
         get() = DocumentType(client.client.documentTypes, api.documentType!!)
 
     val latestFile: DocumentFile
-        get() = DocumentFile(client.api.documentFiles, api.fileLatest!!)
+        get() = DocumentFile(client.client.documents, api.fileLatest!!)
 
     val latestFileUrl: URI
         get() = api.fileListUrl!!

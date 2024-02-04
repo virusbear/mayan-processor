@@ -18,12 +18,12 @@ class DocumentClient(
 
             response.results to response.next
         }) {
-            Cabinet(api.cabinets, it)
+            Cabinet(client.cabinets, it)
         }
 
     suspend fun getCheckoutState(id: Int): Checkout =
         api.documents.documentsCheckoutRead(id.toString()).let {
-            Checkout(api.checkouts, it)
+            Checkout(client.checkouts, it)
         }
 
     suspend fun deleteCheckout(id: Int) {
@@ -43,12 +43,12 @@ class DocumentClient(
 
             response.results to response.next
         }) {
-            Comment(api.comments, it)
+            Comment(client.comments, id, it)
         }
 
     suspend fun getComment(id: Int, comment: Int): Comment =
         api.documents.documentsCommentsRead(id.toString(), comment.toString()).let {
-            Comment(api.comments, it)
+            Comment(client.comments, id, it)
         }
 
     suspend fun listDuplicates(id: Int): List<DuplicateTargetDocument> =
@@ -60,7 +60,7 @@ class DocumentClient(
 
             response.results to response.next
         }) {
-            DuplicateTargetDocument(api.duplicates, it)
+            DuplicateTargetDocument(client, it)
         }
 
     suspend fun listFiles(id: Int): List<DocumentFile> =
@@ -72,7 +72,7 @@ class DocumentClient(
 
             response.results to response.next
         }) {
-            DocumentFile(api.files, it)
+            DocumentFile(this, it)
         }
 
     suspend fun getFile(id: Int, fileId: Int): DocumentFile =
@@ -80,7 +80,7 @@ class DocumentClient(
             documentId = id.toString(),
             documentFileId = fileId.toString()
         ).let {
-            DocumentFile(api.files, it)
+            DocumentFile(this, it)
         }
 
     suspend fun listIndexes(id: Int): List<Index> =
@@ -92,7 +92,7 @@ class DocumentClient(
 
             response.results to response.next
         }) {
-            Index(api.indexes, it)
+            Index(client.indexes, it)
         }
 
     suspend fun listMetadata(id: Int): List<DocumentMetadata> =
@@ -104,7 +104,7 @@ class DocumentClient(
 
             response.results to response.next
         }) {
-            DocumentMetadata(api.metadata, it)
+            DocumentMetadata(client.metadata, it)
         }
 
     suspend fun getMetadata(id: Int, metadataId: Int): DocumentMetadata =
@@ -112,7 +112,7 @@ class DocumentClient(
             documentId = id.toString(),
             metadataId = metadataId.toString()
         ).let {
-            DocumentMetadata(api.metadata, it)
+            DocumentMetadata(client.metadata, it)
         }
 
     suspend fun listResolvedSmartLinks(id: Int): List<ResolvedSmartLink> =
@@ -124,7 +124,7 @@ class DocumentClient(
 
             response.results to response.next
         }) {
-            ResolvedSmartLink(api.smartLinks, it)
+            ResolvedSmartLink(client.smartLinks, it)
         }
 
     suspend fun listResolvedWebLinks(id: Int): List<ResolvedWebLink> =
@@ -136,7 +136,7 @@ class DocumentClient(
 
             response.results to response.next
         }) {
-            ResolvedWebLink(api.webLinks, it)
+            ResolvedWebLink(client.webLinks, it)
         }
 
     suspend fun listSignatureCaptures(id: Int): List<SignatureCapture> =
@@ -148,7 +148,7 @@ class DocumentClient(
 
             response.results to response.next
         }) {
-            SignatureCapture(api.signatureCaptures, it)
+            SignatureCapture(client.signatureCaptures, it)
         }
 
     suspend fun listTags(id: Int): List<Tag> =
@@ -160,7 +160,7 @@ class DocumentClient(
 
             response.results to response.next
         }) {
-            Tag(api.tags, it)
+            Tag(client.tags, it)
         }
 
     suspend fun listVersions(id: Int): List<DocumentVersion> =
@@ -172,27 +172,27 @@ class DocumentClient(
 
             response.results to response.next
         }) {
-            DocumentVersion(api.documentVersions, it)
+            DocumentVersion(client.documentVersions, it)
         }
 
     suspend fun getResolvedSmartLink(id: Int, linkId: Int): ResolvedSmartLink =
         api.documents.documentsResolvedSmartLinksRead(id.toString(), linkId.toString()).let {
-            ResolvedSmartLink(api.smartLinks, it)
+            ResolvedSmartLink(client.smartLinks, it)
         }
 
     suspend fun getResolvedWebLink(id: Int, linkId: Int): ResolvedWebLink =
         api.documents.documentsResolvedWebLinksRead(id.toString(), linkId.toString()).let {
-            ResolvedWebLink(api.webLinks, it)
+            ResolvedWebLink(client.webLinks, it)
         }
 
     suspend fun getSignatureCapture(id: Int, signatureId: Int): SignatureCapture =
         api.documents.documentsResolvedWebLinksRead(id.toString(), signatureId.toString()).let {
-            SignatureCapture(api.signatureCaptures, it)
+            SignatureCapture(client.signatureCaptures, it)
         }
 
     suspend fun getVersion(id: Int, versionId: Int): DocumentVersion =
         api.documents.documentsVersionsRead(id.toString(), versionId.toString()).let {
-            DocumentVersion(api.documentVersions, it)
+            DocumentVersion(client.documentVersions, it)
         }
 }
 

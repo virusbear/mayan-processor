@@ -22,7 +22,7 @@ class Comment(
         get() = api.url!!
 
     val user: User
-        get() = User(client.client.users, api.user)
+        get() = User(client.client.users, api.user!!)
 
     val submitDate: OffsetDateTime
         get() = api.submitDate!!
@@ -33,7 +33,7 @@ class Comment(
         client.delete(documentId, this.id)
     }
 
-    suspend fun update(content: String = this.content, username: String = this.user.name) {
+    suspend fun update(content: String = this.content, username: String = this.user.username) {
         client.update(documentId, this.id, api.copy(text = content, user = ApiUser(username = username)))
     }
     //endregion

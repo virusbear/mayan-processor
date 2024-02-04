@@ -1,6 +1,7 @@
 package com.virusbear.mayan.client
 
 import com.virusbear.mayan.api.client.api.*
+import com.virusbear.mayan.client.model.SignatureCapture
 import okhttp3.OkHttpClient
 
 class Api(
@@ -25,5 +26,13 @@ class Api(
 
     val checkouts: CheckoutsApi by lazy {
         CheckoutsApi(basePath, client)
+    }
+
+    val users: UsersApi by lazy {
+        UsersApi(basePath, client)
+    }
+
+    val groups: GroupsApi by lazy {
+        GroupsApi(basePath, client)
     }
 }

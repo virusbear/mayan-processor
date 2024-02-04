@@ -38,4 +38,16 @@ class MayanClient(
     val checkouts: CheckoutClient by lazy {
         CheckoutClient(this, api)
     }
+
+    val users: UserClient by lazy {
+        UserClient(this, api)
+    }
+
+    val groups: GroupClient by lazy {
+        GroupClient(this, api)
+    }
+
+    val signatureCaptures: SignatureCaptureClient by lazy {
+        SignatureCaptureClient(this, api)
+    }
 }
