@@ -3,7 +3,7 @@ package com.virusbear.mayan.client.model
 import com.virusbear.mayan.api.client.model.ApiWebLink
 import java.net.URI
 
-class Weblink(
+class WebLink(
     private val api: ApiWebLink
 ) {
     //region fields

@@ -3,7 +3,7 @@ package com.virusbear.mayan.client.model
 import com.virusbear.mayan.api.client.model.ApiSmartLink
 import java.net.URI
 
-class SmartLinks(
+class SmartLink(
     private val api: ApiSmartLink
 ) {
     //region fields
