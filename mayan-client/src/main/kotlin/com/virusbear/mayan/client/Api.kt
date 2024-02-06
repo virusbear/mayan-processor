@@ -35,4 +35,8 @@ class Api(
     val groups: GroupsApi by lazy {
         GroupsApi(basePath, client)
     }
+
+    val smartLinks: SmartLinksApi by lazy {
+        SmartLinksApi(basePath, client)
+    }
 }
