@@ -1,11 +1,20 @@
 package com.virusbear.mayan.client
 
-import com.virusbear.mayan.client.model.DocumentType
+import com.virusbear.mayan.client.model.*
 
 class DocumentTypeClient(
     val client: MayanClient,
     api: Api
 ): BaseClient(api) {
+    suspend fun listDocumentTypes(): List<DocumentType> =
+        getPaged({
+            val response = api.documentTypes.documentTypesList(page = it)
+
+            response.results to response.next
+        }) {
+            DocumentType(this, it)
+        }
+
     suspend fun getDocumentType(id: Int): DocumentType =
         DocumentType(this, api.documentTypes.documentTypesRead(id.toString()))
 
@@ -43,12 +52,12 @@ class DocumentTypeClient(
 
     suspend fun getOcrSettings(id: Int): OcrSettings =
         api.documentTypes.documentTypesOcrSettingsRead(id.toString()).let {
-            OcrSettings(id, it)
+            OcrSettings(it)
         }
 
     suspend fun getParsingSettings(id: Int): ParsingSettings =
         api.documentTypes.documentTypesParsingSettingsRead(id.toString()).let {
-            ParsingSettings(id, it)
+            ParsingSettings(it)
         }
 
     suspend fun getQuickLabel(id: Int, quickLabelId: Int): QuickLabel =

@@ -2,6 +2,7 @@ package com.virusbear.mayan.client.model
 
 import com.virusbear.mayan.api.client.model.ApiDocumentType
 import com.virusbear.mayan.client.DocumentTypeClient
+import com.virusbear.mayan.client.MayanClient
 import java.net.URI
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
@@ -12,6 +13,14 @@ class DocumentType(
     private val client: DocumentTypeClient,
     private val api: ApiDocumentType
 ) {
+    companion object {
+        suspend fun all(client: MayanClient): List<DocumentType> =
+            client.documentTypes.listDocumentTypes()
+
+        suspend fun get(client: MayanClient, id: Int): DocumentType =
+            client.documentTypes.getDocumentType(id)
+    }
+
     //region fields
     val label: String
         get() = api.label
