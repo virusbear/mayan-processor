@@ -1,7 +1,6 @@
 package com.virusbear.mayan.client
 
 import com.virusbear.mayan.api.client.api.*
-import com.virusbear.mayan.client.model.SignatureCapture
 import okhttp3.OkHttpClient
 
 class Api(
@@ -38,5 +37,9 @@ class Api(
 
     val smartLinks: SmartLinksApi by lazy {
         SmartLinksApi(basePath, client)
+    }
+
+    val metadataTypes: MetadataTypesApi by lazy {
+        MetadataTypesApi(basePath, client)
     }
 }

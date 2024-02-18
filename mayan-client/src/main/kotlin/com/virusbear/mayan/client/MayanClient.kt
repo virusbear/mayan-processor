@@ -50,4 +50,8 @@ class MayanClient(
     val signatureCaptures: SignatureCaptureClient by lazy {
         SignatureCaptureClient(this, api)
     }
+
+    val metadataTypes: MetadataTypeClient by lazy {
+        MetadataTypeClient(this, api)
+    }
 }
