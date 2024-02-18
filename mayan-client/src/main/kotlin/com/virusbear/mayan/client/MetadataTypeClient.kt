@@ -25,4 +25,8 @@ class MetadataTypeClient(
         api.metadataTypes.metadataTypesCreate(model).let {
             MetadataType(this, it)
         }
+
+    suspend fun delete(id: Int) {
+        api.metadataTypes.metadataTypesDelete(id.toString())
+    }
 }

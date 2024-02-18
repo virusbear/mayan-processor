@@ -80,5 +80,8 @@ class MetadataType(
     //endregion
 
     //region operations
+    suspend fun delete() {
+        client.delete(id)
+    }
     //endregion
 }
