@@ -1,6 +1,7 @@
 package com.virusbear.mayan.client.model
 
 import com.virusbear.mayan.api.client.model.ApiDocumentVersion
+import com.virusbear.mayan.api.client.model.ApiDocumentVersionModificationExecute
 import com.virusbear.mayan.client.DocumentVersionClient
 import java.net.URI
 import java.time.OffsetDateTime
@@ -52,5 +53,27 @@ class DocumentVersion(
     //endregion
 
     //region operations
+    suspend fun delete() {
+        client.delete(this.documentId, this.id)
+    }
+
+    suspend fun export() {
+        client.export(this.documentId, this.id)
+    }
+
+    suspend fun modify(backend: Backend) {
+        client.modify(this.documentId, this.id, backend.api)
+    }
+
+    suspend fun submitOcr() {
+        client.submitOcr(this.documentId, this.id)
+    }
     //endregion
+
+    enum class Backend(
+        val api: ApiDocumentVersionModificationExecute.BackendId
+    ) {
+        Append(ApiDocumentVersionModificationExecute.BackendId.DocumentVersionModificationPagesAppend),
+        Reset(ApiDocumentVersionModificationExecute.BackendId.DocumentVersionModificationPagesReset)
+    }
 }
