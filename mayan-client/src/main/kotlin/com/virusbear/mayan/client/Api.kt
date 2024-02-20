@@ -42,4 +42,8 @@ class Api(
     val metadataTypes: MetadataTypesApi by lazy {
         MetadataTypesApi(basePath, client)
     }
+
+    val contentTypes: ContentTypesApi by lazy {
+        ContentTypesApi(basePath, client)
+    }
 }

@@ -54,4 +54,8 @@ class MayanClient(
     val metadataTypes: MetadataTypeClient by lazy {
         MetadataTypeClient(this, api)
     }
+
+    val contentTypes: ContentTypesClient by lazy {
+        ContentTypesClient(this, api)
+    }
 }
