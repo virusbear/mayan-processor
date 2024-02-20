@@ -210,9 +210,101 @@
         }
       ]
     },
-    "/app_image_error/{app_image_error_name}/image/": {
+    "/app_image_errors/": {
       "get": {
-        "operationId": "app_image_error_image_read",
+        "operationId": "app_image_errors_list",
+        "description": "Returns an list of the available app image errors.",
+        "parameters": [
+          {
+            "name": "_ordering",
+            "in": "query",
+            "description": "Which field to use when ordering the results.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "Number of results to return per page.",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "required": [
+                "count",
+                "results"
+              ],
+              "type": "object",
+              "properties": {
+                "count": {
+                  "type": "integer"
+                },
+                "next": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "previous": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/AppImageError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "app_image_errors"
+        ]
+      },
+      "parameters": []
+    },
+    "/app_image_errors/{app_image_error_name}/": {
+      "get": {
+        "operationId": "app_image_errors_read",
+        "description": "Returns the details of the selected app image error.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/AppImageError"
+            }
+          }
+        },
+        "tags": [
+          "app_image_errors"
+        ]
+      },
+      "parameters": [
+        {
+          "name": "app_image_error_name",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ]
+    },
+    "/app_image_errors/{app_image_error_name}/image/": {
+      "get": {
+        "operationId": "app_image_errors_image_read",
         "description": "Returns an image representation of the selected app image error.",
         "parameters": [],
         "produces": ["application/octet-stream"],
@@ -225,7 +317,7 @@
           }
         },
         "tags": [
-          "app_image_error"
+          "app_image_errors"
         ]
       },
       "parameters": [
@@ -1018,6 +1110,212 @@
         ]
       },
       "parameters": []
+    },
+    "/content_types/{content_type_id}/": {
+      "get": {
+        "operationId": "content_types_read",
+        "description": "Returns the details of the selected content type.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ContentType"
+            }
+          }
+        },
+        "tags": [
+          "content_types"
+        ]
+      },
+      "parameters": [
+        {
+          "name": "content_type_id",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ]
+    },
+    "/credentials/": {
+      "get": {
+        "operationId": "credentials_list",
+        "description": "Returns a list of all the import setups.",
+        "parameters": [
+          {
+            "name": "_ordering",
+            "in": "query",
+            "description": "Which field to use when ordering the results.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "Number of results to return per page.",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "required": [
+                "count",
+                "results"
+              ],
+              "type": "object",
+              "properties": {
+                "count": {
+                  "type": "integer"
+                },
+                "next": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "previous": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/StoredCredential"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "credentials"
+        ]
+      },
+      "post": {
+        "operationId": "credentials_create",
+        "description": "Create a new import setup.",
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/StoredCredential"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/StoredCredential"
+            }
+          }
+        },
+        "tags": [
+          "credentials"
+        ]
+      },
+      "parameters": []
+    },
+    "/credentials/{credential_id}/": {
+      "get": {
+        "operationId": "credentials_read",
+        "description": "Return the details of the selected import setup.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/StoredCredential"
+            }
+          }
+        },
+        "tags": [
+          "credentials"
+        ]
+      },
+      "put": {
+        "operationId": "credentials_update",
+        "description": "Edit the selected import setup.",
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/StoredCredential"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/StoredCredential"
+            }
+          }
+        },
+        "tags": [
+          "credentials"
+        ]
+      },
+      "patch": {
+        "operationId": "credentials_partial_update",
+        "description": "Edit the selected import setup.",
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/StoredCredential"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/StoredCredential"
+            }
+          }
+        },
+        "tags": [
+          "credentials"
+        ]
+      },
+      "delete": {
+        "operationId": "credentials_delete",
+        "description": "Delete the selected import setup.",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "credentials"
+        ]
+      },
+      "parameters": [
+        {
+          "name": "credential_id",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ]
     },
     "/document_file_actions/": {
       "get": {
@@ -5584,6 +5882,138 @@
         }
       ]
     },
+    "/downloads/": {
+      "get": {
+        "operationId": "downloads_list",
+        "description": "Returns a list of all the download files.",
+        "parameters": [
+          {
+            "name": "_ordering",
+            "in": "query",
+            "description": "Which field to use when ordering the results.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "Number of results to return per page.",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "required": [
+                "count",
+                "results"
+              ],
+              "type": "object",
+              "properties": {
+                "count": {
+                  "type": "integer"
+                },
+                "next": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "previous": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/DownloadFile"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "downloads"
+        ]
+      },
+      "parameters": []
+    },
+    "/downloads/{download_file_id}/": {
+      "get": {
+        "operationId": "downloads_read",
+        "description": "Return the details of the selected download file.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/DownloadFile"
+            }
+          }
+        },
+        "tags": [
+          "downloads"
+        ]
+      },
+      "delete": {
+        "operationId": "downloads_delete",
+        "description": "Delete the selected download file.",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "downloads"
+        ]
+      },
+      "parameters": [
+        {
+          "name": "download_file_id",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ]
+    },
+    "/downloads/{download_file_id}/download/": {
+      "get": {
+        "operationId": "downloads_download_read",
+        "description": "Download a download file.",
+        "parameters": [],
+        "produces": ["application/octet-stream"],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        },
+        "tags": [
+          "downloads"
+        ]
+      },
+      "parameters": [
+        {
+          "name": "download_file_id",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ]
+    },
     "/event_type_namespaces/": {
       "get": {
         "operationId": "event_type_namespaces_list",
@@ -7275,6 +7705,186 @@
         }
       ]
     },
+    "/mailing_profiles/": {
+      "get": {
+        "operationId": "mailing_profiles_list",
+        "description": "Returns a list of all the mailing profiles.",
+        "parameters": [
+          {
+            "name": "_ordering",
+            "in": "query",
+            "description": "Which field to use when ordering the results.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "Number of results to return per page.",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "required": [
+                "count",
+                "results"
+              ],
+              "type": "object",
+              "properties": {
+                "count": {
+                  "type": "integer"
+                },
+                "next": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "previous": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/MailingProfile"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "mailing_profiles"
+        ]
+      },
+      "post": {
+        "operationId": "mailing_profiles_create",
+        "description": "Create a new mailing profile.",
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MailingProfile"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/MailingProfile"
+            }
+          }
+        },
+        "tags": [
+          "mailing_profiles"
+        ]
+      },
+      "parameters": []
+    },
+    "/mailing_profiles/{mailing_profile_id}/": {
+      "get": {
+        "operationId": "mailing_profiles_read",
+        "description": "Return the details of the selected mailing profile.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/MailingProfile"
+            }
+          }
+        },
+        "tags": [
+          "mailing_profiles"
+        ]
+      },
+      "put": {
+        "operationId": "mailing_profiles_update",
+        "description": "Edit the selected mailing profile.",
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MailingProfile"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/MailingProfile"
+            }
+          }
+        },
+        "tags": [
+          "mailing_profiles"
+        ]
+      },
+      "patch": {
+        "operationId": "mailing_profiles_partial_update",
+        "description": "Edit the selected mailing profile.",
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MailingProfile"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/MailingProfile"
+            }
+          }
+        },
+        "tags": [
+          "mailing_profiles"
+        ]
+      },
+      "delete": {
+        "operationId": "mailing_profiles_delete",
+        "description": "Delete the selected mailing profile.",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "mailing_profiles"
+        ]
+      },
+      "parameters": [
+        {
+          "name": "mailing_profile_id",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ]
+    },
     "/messages/": {
       "get": {
         "operationId": "messages_list",
@@ -8407,6 +9017,100 @@
             "description": "",
             "schema": {
               "type": "file"
+            }
+          }
+        },
+        "tags": [
+          "objects"
+        ]
+      },
+      "parameters": [
+        {
+          "name": "app_label",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "model_name",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "object_id",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ]
+    },
+    "/objects/{app_label}/{model_name}/{object_id}/mailing/attachment/": {
+      "post": {
+        "operationId": "objects_mailing_attachment_create",
+        "description": "Send an object as attachment via email.",
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MailingProfileAction"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/MailingProfileAction"
+            }
+          }
+        },
+        "tags": [
+          "objects"
+        ]
+      },
+      "parameters": [
+        {
+          "name": "app_label",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "model_name",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "object_id",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ]
+    },
+    "/objects/{app_label}/{model_name}/{object_id}/mailing/link/": {
+      "post": {
+        "operationId": "objects_mailing_link_create",
+        "description": "Send an object link via email.",
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MailingProfileAction"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/MailingProfileAction"
             }
           }
         },
@@ -9894,6 +10598,79 @@
         }
       ]
     },
+    "/sources/{source_id}/actions/": {
+      "get": {
+        "operationId": "sources_actions_list",
+        "description": "Source action list view.",
+        "parameters": [
+          {
+            "name": "_ordering",
+            "in": "query",
+            "description": "Which field to use when ordering the results.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "Number of results to return per page.",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "required": [
+                "count",
+                "results"
+              ],
+              "type": "object",
+              "properties": {
+                "count": {
+                  "type": "integer"
+                },
+                "next": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "previous": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/SourceBackendAction"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "sources"
+        ]
+      },
+      "parameters": [
+        {
+          "name": "source_id",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ]
+    },
     "/sources/{source_id}/actions/{action_name}/": {
       "get": {
         "operationId": "sources_actions_read",
@@ -9904,6 +10681,78 @@
             "description": "",
             "schema": {
               "$ref": "#/definitions/SourceBackendAction"
+            }
+          }
+        },
+        "tags": [
+          "sources"
+        ]
+      },
+      "parameters": [
+        {
+          "name": "source_id",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "action_name",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ]
+    },
+    "/sources/{source_id}/actions/{action_name}/execute/": {
+      "get": {
+        "operationId": "sources_actions_execute_list",
+        "description": "Execute a source action without confirmation.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "Number of results to return per page.",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "required": [
+                "count",
+                "results"
+              ],
+              "type": "object",
+              "properties": {
+                "count": {
+                  "type": "integer"
+                },
+                "next": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "previous": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/SourceBackendAction"
+                  }
+                }
+              }
             }
           }
         },
@@ -12730,6 +13579,43 @@
         }
       }
     },
+    "AppImageError": {
+      "required": [
+        "name",
+        "image_path",
+        "template_name"
+      ],
+      "type": "object",
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string",
+          "minLength": 1
+        },
+        "image_path": {
+          "title": "Bildpfad",
+          "type": "string",
+          "minLength": 1
+        },
+        "image_url": {
+          "title": "Bild URL",
+          "type": "string",
+          "format": "uri",
+          "readOnly": true
+        },
+        "template_name": {
+          "title": "Vorlagename",
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "title": "URL",
+          "type": "string",
+          "format": "uri",
+          "readOnly": true
+        }
+      }
+    },
     "Asset": {
       "required": [
         "label",
@@ -12927,6 +13813,18 @@
             "minutes"
           ],
           "x-nullable": true
+        },
+        "document_stub_expiration_interval": {
+          "title": "Intervall für Säuberung unvollständiger Dokumente",
+          "description": "Zeit (in Sekunden) nach der ein unvollständiges Dokument als ungültig angesehen und gelöscht wird, wenn Säuberung aktiviert ist, Dies ist eine Optimierungseinstellung und sollte nur unter bestimmten Umständen geändert werden.",
+          "type": "integer",
+          "maximum": 9223372036854775807,
+          "minimum": 0
+        },
+        "document_stub_pruning_enabled": {
+          "title": "Säuberung unvollständiger Dokumente",
+          "description": "Dokumente ohne zugeordnete Dateien nach einem konfigurierten Intervall löschen.",
+          "type": "boolean"
         },
         "filename_generator_backend": {
           "title": "Backend für die Dateinamengenerierung",
@@ -13136,6 +14034,12 @@
           "type": "string",
           "readOnly": true,
           "minLength": 1
+        },
+        "url": {
+          "title": "URL",
+          "type": "string",
+          "format": "uri",
+          "readOnly": true
         }
       }
     },
@@ -13500,6 +14404,45 @@
         "id": {
           "title": "ID",
           "type": "integer",
+          "readOnly": true
+        }
+      }
+    },
+    "StoredCredential": {
+      "required": [
+        "label",
+        "backend_path"
+      ],
+      "type": "object",
+      "properties": {
+        "label": {
+          "title": "Bezeichner",
+          "description": "Kurzbeschreibung dieser Zugangsdaten.",
+          "type": "string",
+          "maxLength": 128,
+          "minLength": 1
+        },
+        "backend_path": {
+          "title": "Backendpfad",
+          "description": "Der punktierte Pythonpfad zur Backendklasse.",
+          "type": "string",
+          "maxLength": 128,
+          "minLength": 1
+        },
+        "backend_data": {
+          "title": "Backenddaten",
+          "description": "JSON kodierte Daten für die Backend Klasse.",
+          "type": "string"
+        },
+        "id": {
+          "title": "ID",
+          "type": "integer",
+          "readOnly": true
+        },
+        "url": {
+          "title": "Url",
+          "type": "string",
+          "format": "uri",
           "readOnly": true
         }
       }
@@ -14945,6 +15888,49 @@
         }
       }
     },
+    "DownloadFile": {
+      "type": "object",
+      "properties": {
+        "datetime": {
+          "title": "Datum & Zeit",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "download_url": {
+          "title": "Download-URL",
+          "type": "string",
+          "format": "uri",
+          "readOnly": true
+        },
+        "filename": {
+          "title": "Dateiname",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "id": {
+          "title": "ID",
+          "type": "integer",
+          "readOnly": true
+        },
+        "label": {
+          "title": "Bezeichner",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        },
+        "url": {
+          "title": "URL",
+          "type": "string",
+          "format": "uri",
+          "readOnly": true
+        }
+      }
+    },
     "EventTypeNamespace": {
       "required": [
         "label",
@@ -15477,6 +16463,54 @@
         }
       }
     },
+    "MailingProfile": {
+      "required": [
+        "backend_path",
+        "label"
+      ],
+      "type": "object",
+      "properties": {
+        "backend_data": {
+          "title": "Backenddaten",
+          "description": "JSON kodierte Daten für die Backend Klasse.",
+          "type": "string"
+        },
+        "backend_path": {
+          "title": "Backendpfad",
+          "description": "Der punktierte Pythonpfad zur Backendklasse.",
+          "type": "string",
+          "maxLength": 128,
+          "minLength": 1
+        },
+        "default": {
+          "title": "Standard",
+          "description": "Wenn als Standard gesetzt, wird dieses Mailprofil auf dem Dokumentenmailformular voreingestellt.",
+          "type": "boolean"
+        },
+        "enabled": {
+          "title": "Aktiviert",
+          "type": "boolean"
+        },
+        "id": {
+          "title": "ID",
+          "type": "integer",
+          "readOnly": true
+        },
+        "label": {
+          "title": "Bezeichner",
+          "description": "Ein kurzer Text, der das Mail-Profil beschreibt.",
+          "type": "string",
+          "maxLength": 128,
+          "minLength": 1
+        },
+        "url": {
+          "title": "URL",
+          "type": "string",
+          "format": "uri",
+          "readOnly": true
+        }
+      }
+    },
     "Message": {
       "required": [
         "body",
@@ -15568,7 +16602,7 @@
           "minLength": 1
         },
         "pk": {
-          "title": "Primärschlüssel",
+          "title": "Primäschlüssel",
           "type": "string",
           "readOnly": true,
           "minLength": 1
@@ -15618,19 +16652,19 @@
           "minLength": 1
         },
         "permissions_add_url": {
-          "title": "Berechtigung hinzufügen URL",
+          "title": "Berechtigungen hinzufügen URL",
           "type": "string",
           "format": "uri",
           "readOnly": true
         },
         "permissions_url": {
-          "title": "Berechtigungs-URL",
+          "title": "Berechtigungen URL",
           "type": "string",
           "format": "uri",
           "readOnly": true
         },
         "permissions_remove_url": {
-          "title": "Berechtigung entziehen URL",
+          "title": "Berechtigungen entziehen URL",
           "type": "string",
           "format": "uri",
           "readOnly": true
@@ -15655,24 +16689,24 @@
           "readOnly": true
         },
         "object_id": {
-          "title": "Objekt ID",
+          "title": "Objekt-ID",
           "type": "integer",
           "readOnly": true
         },
         "permissions_add_url": {
-          "title": "Berechtigung hinzufügen URL",
+          "title": "Berechtigungen hinzufügen URL",
           "type": "string",
           "format": "uri",
           "readOnly": true
         },
         "permissions_remove_url": {
-          "title": "Berechtigung entziehen URL",
+          "title": "Berechtigungen entziehen URL",
           "type": "string",
           "format": "uri",
           "readOnly": true
         },
         "permissions_url": {
-          "title": "Berechtigungs-URL",
+          "title": "Berechtigungen URL",
           "type": "string",
           "format": "uri",
           "readOnly": true
@@ -15735,7 +16769,7 @@
           "readOnly": true
         },
         "object_id": {
-          "title": "Objekt ID",
+          "title": "Objekt-ID",
           "type": "integer"
         },
         "text": {
@@ -15750,6 +16784,35 @@
           "type": "string",
           "format": "uri",
           "readOnly": true
+        }
+      }
+    },
+    "MailingProfileAction": {
+      "required": [
+        "mailing_profile",
+        "recipient"
+      ],
+      "type": "object",
+      "properties": {
+        "body": {
+          "title": "Nachrichtenteil",
+          "type": "string",
+          "minLength": 1
+        },
+        "mailing_profile": {
+          "title": "Mailing profile ID",
+          "description": "Primary key of the mailing profile to use.",
+          "type": "string"
+        },
+        "recipient": {
+          "title": "Empfänger",
+          "type": "string",
+          "minLength": 1
+        },
+        "subject": {
+          "title": "Betreff",
+          "type": "string",
+          "minLength": 1
         }
       }
     },
@@ -15913,7 +16976,7 @@
           "minLength": 1
         },
         "pk": {
-          "title": "Primärschlüssel",
+          "title": "Primäschlüssel",
           "type": "string",
           "readOnly": true,
           "minLength": 1
@@ -15959,7 +17022,7 @@
         },
         "dynamic_label": {
           "title": "Dynamische Bezeichnung",
-          "description": "Verwenden Sie dieses Feld um abhängig vom Dokument, von dem aus auf den Smart Link zugegriffen wird, eine eindeutige Bezeichnung anzuzeigen.",
+          "description": "Verwenden Sie dieses Feld um abhängig vom Dokument, von dem aus auf den Smartlink zugegriffen wird, eine eindeutige Bezeichnung anzuzeigen.",
           "type": "string",
           "maxLength": 96
         },
@@ -15969,7 +17032,7 @@
         },
         "label": {
           "title": "Bezeichner",
-          "description": "Ein kurzer Text, der den Smart Link beschreibt.",
+          "description": "Ein kurzer Text, der den Smartlink beschreibt.",
           "type": "string",
           "maxLength": 128,
           "minLength": 1
@@ -16104,8 +17167,8 @@
       ],
       "type": "object",
       "properties": {
-        "actions": {
-          "title": "Aktionen",
+        "actions_url": {
+          "title": "Aktions-URL",
           "type": "string",
           "readOnly": true
         },
@@ -16138,20 +17201,120 @@
           "minLength": 1
         },
         "url": {
-          "title": "URL",
+          "title": "Url",
           "type": "string",
           "format": "uri",
           "readOnly": true
         }
       }
     },
-    "SourceBackendAction": {
+    "SourceBackendActionInterfaceArgument": {
+      "required": [
+        "has_default",
+        "help_text",
+        "name",
+        "required"
+      ],
+      "type": "object",
+      "properties": {
+        "default": {
+          "title": "Standard",
+          "type": "string",
+          "readOnly": true
+        },
+        "has_default": {
+          "title": "Hat Default?",
+          "type": "boolean"
+        },
+        "help_text": {
+          "title": "Hilfetext",
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "title": "Name",
+          "type": "string",
+          "minLength": 1
+        },
+        "required": {
+          "title": "Erforderlich",
+          "type": "boolean"
+        }
+      }
+    },
+    "SourceBackendActionInterface": {
+      "required": [
+        "name"
+      ],
       "type": "object",
       "properties": {
         "arguments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SourceBackendActionInterfaceArgument"
+          },
+          "readOnly": true
+        },
+        "name": {
+          "title": "Name",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "SourceBackendAction": {
+      "type": "object",
+      "properties": {
+        "accept_files": {
+          "title": "Dateien akzeptieren",
+          "type": "boolean",
+          "readOnly": true
+        },
+        "arguments": {
           "title": "Argumente",
-          "description": "Optionale Argumente für die Aktion in JSON-Formatierung",
+          "description": "Optionale Argumente für die Aktion in JSON-Formatierung.",
           "type": "object"
+        },
+        "confirmation": {
+          "title": "Bestätigung",
+          "type": "boolean",
+          "readOnly": true
+        },
+        "execute_url": {
+          "title": "URL ausführen",
+          "type": "string",
+          "readOnly": true
+        },
+        "interfaces": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SourceBackendActionInterface"
+          },
+          "readOnly": true
+        },
+        "name": {
+          "title": "Name",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "permission": {
+          "$ref": "#/definitions/Permission"
+        },
+        "source_id": {
+          "title": "Source id",
+          "type": "string",
+          "readOnly": true
+        },
+        "source_url": {
+          "title": "Source url",
+          "type": "string",
+          "readOnly": true
+        },
+        "url": {
+          "title": "URL",
+          "type": "string",
+          "readOnly": true
         }
       }
     },
@@ -16192,7 +17355,7 @@
       "properties": {
         "datetime_created": {
           "title": "Erzeugt",
-          "description": "Datum und Zeit der Dokumenterstellung",
+          "description": "Datum und Zeit der Dokumenterstellung.",
           "type": "string",
           "format": "date-time",
           "readOnly": true
@@ -16395,21 +17558,22 @@
     },
     "WorkflowTemplateStateAction": {
       "required": [
-        "action_path",
+        "backend_path",
         "label"
       ],
       "type": "object",
       "properties": {
-        "action_path": {
-          "title": "Pfad der Eingangsaktion",
-          "description": "Der punktierte Pythonpfad zu der Workflowaktionsklasse, die ausgeführt werden soll.",
+        "backend_data": {
+          "title": "Backenddaten",
+          "description": "JSON kodierte Daten für die Backend Klasse.",
+          "type": "string"
+        },
+        "backend_path": {
+          "title": "Backendpfad",
+          "description": "Der punktierte Pythonpfad zur Backendklasse.",
           "type": "string",
           "maxLength": 128,
           "minLength": 1
-        },
-        "action_data": {
-          "title": "Daten der Eingangsaktion",
-          "type": "string"
         },
         "condition": {
           "title": "Bedingung",
