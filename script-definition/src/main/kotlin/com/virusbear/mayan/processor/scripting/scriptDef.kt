@@ -51,7 +51,7 @@ object MayanProcessorScriptConfiguration: ScriptCompilationConfiguration(
                 }
 
                 context.compilationConfiguration.with {
-                    importScripts(libraries)
+                    importScripts.append(libraries)
                 }.asSuccess()
             }
         }

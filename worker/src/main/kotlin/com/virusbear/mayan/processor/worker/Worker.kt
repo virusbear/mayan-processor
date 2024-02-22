@@ -21,7 +21,7 @@ suspend fun Worker(
 ) {
     withContext(context + CoroutineName("Worker")) {
         val logger = KotlinLogging.logger("Worker")
-        val host = MayanProcessorHost(config.scriptPath, config.watch).apply { config.disabledModules.forEach(this::disable) }
+        val host = MayanProcessorHost(config.scriptPath, config.libraryPath, config.watch).apply { config.disabledModules.forEach(this::disable) }
 
         val dispatcher = newDynamicThreadPool(1, config.workerThreads).asCoroutineDispatcher()
         val channel = Channel<Deferred<Unit>>(config.parallelism - 1)
@@ -42,7 +42,7 @@ suspend fun Worker(
                     }
 
                     try {
-                        host.process(MayanApiProcessingContext(client, client.document(task.documentId)))
+                        host.process(MayanApiProcessingContext(client.documents.getDocument(task.documentId)))
                         task.ack()
                     } catch (ex: Exception) {
                         logger.error(ex) { "Error processing document ${task.documentId}" }
