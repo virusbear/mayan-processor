@@ -15,13 +15,17 @@ import kotlin.script.experimental.jvmhost.createJvmCompilationConfigurationFromT
 
 class MayanProcessorHost(
     private val scriptPath: File,
+    private val libraryPath: File,
     watch: Boolean = true
 ) {
     companion object {
         private val logger = KotlinLogging.logger { }
     }
 
-    private val compilationConfiguration = createJvmCompilationConfigurationFromTemplate<MayanProcessorScript>()
+    private val compilationConfiguration =
+        createJvmCompilationConfigurationFromTemplate<MayanProcessorScript>().with {
+            set(LibraryDirectoryProperty, libraryPath)
+        }
     private val scriptHost = BasicJvmScriptingHost()
 
     private val processors: MutableMap<String, MayanProcessor>
