@@ -172,7 +172,7 @@ class DocumentClient(
 
             response.results to response.next
         }) {
-            DocumentVersion(it)
+            DocumentVersion(client.documentVersions, it)
         }
 
     suspend fun getResolvedSmartLink(id: Int, linkId: Int): ResolvedSmartLink =
@@ -192,7 +192,7 @@ class DocumentClient(
 
     suspend fun getVersion(id: Int, versionId: Int): DocumentVersion =
         api.documents.documentsVersionsRead(id.toString(), versionId.toString()).let {
-            DocumentVersion(it)
+            DocumentVersion(client.documentVersions, it)
         }
 }
 

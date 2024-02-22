@@ -58,4 +58,8 @@ class MayanClient(
     val contentTypes: ContentTypesClient by lazy {
         ContentTypesClient(this, api)
     }
+
+    val documentVersions: DocumentVersionClient by lazy {
+        DocumentVersionClient(this, api)
+    }
 }
