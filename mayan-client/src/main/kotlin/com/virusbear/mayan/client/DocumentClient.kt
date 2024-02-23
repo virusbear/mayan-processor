@@ -1,5 +1,7 @@
 package com.virusbear.mayan.client
 
+import com.virusbear.mayan.api.client.model.ApiDocumentChangeType
+import com.virusbear.mayan.api.client.model.ApiDocumentMetadata
 import com.virusbear.mayan.client.model.*
 
 class DocumentClient(
@@ -39,8 +41,20 @@ class DocumentClient(
         api.documents.documentsCheckoutDelete(id.toString())
     }
 
+    suspend fun deleteMetadata(id: Int, metadataId: Int) {
+        api.documents.documentsMetadataDelete(id.toString(), metadataId.toString())
+    }
+
+    suspend fun setMetadataValue(id: Int, metadataId: Int, value: String) {
+        api.documents.documentsMetadataPartialUpdate(id.toString(), metadataId.toString(), ApiDocumentMetadata(value = value))
+    }
+
     suspend fun createOcrSubmit(id: Int) {
         api.documents.documentsOcrSubmitCreate(id.toString())
+    }
+
+    suspend fun changeType(id: Int, documentTypeId: Int) {
+        api.documents.documentsTypeChangeCreate(id.toString(), ApiDocumentChangeType(documentTypeId.toString()))
     }
 
     suspend fun listComments(id: Int): List<Comment> =

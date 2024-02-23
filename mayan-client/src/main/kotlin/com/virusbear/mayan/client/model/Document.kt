@@ -126,7 +126,12 @@ class Document(
         client.deleteCheckout(this.id)
     }
 
-    suspend fun submitForOcr() =
+    suspend fun submitForOcr() {
         client.createOcrSubmit(this.id)
+    }
+
+    suspend fun changeType(type: Int) {
+        client.changeType(this.id, type)
+    }
     //endregion
 }

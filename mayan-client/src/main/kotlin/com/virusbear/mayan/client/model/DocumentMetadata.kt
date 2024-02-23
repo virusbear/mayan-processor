@@ -31,5 +31,12 @@ class DocumentMetadata(
     //endregion
 
     //region operations
+    suspend fun delete() {
+        client.documents.deleteMetadata(document.id, id)
+    }
+
+    suspend fun setValue(value: String) {
+        client.documents.setMetadataValue(document.id, id, value)
+    }
     //endregion
 }
