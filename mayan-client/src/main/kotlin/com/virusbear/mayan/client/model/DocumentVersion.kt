@@ -33,7 +33,7 @@ class DocumentVersion(
         get() = api.pageListUrl!!
 
     val firstPage: DocumentVersionPage
-        get() = DocumentVersionPage(api.pagesFirst!!)
+        get() = DocumentVersionPage(client.client.documents, documentId, api.pagesFirst!!)
 
     val timestamp: OffsetDateTime
         get() = api.timestamp!!

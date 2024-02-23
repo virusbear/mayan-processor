@@ -55,26 +55,12 @@ class DocumentType(
         get() = api.url!!
     //endregion
 
-    //region navigate_multiple
-    suspend fun listMetadataTypes(): List<MetadataType> =
-        client.listMetadataTypes(this.id)
-
-    suspend fun listQuickLabels(): List<QuickLabel> =
-        client.listQuickLabels(this.id)
-    //endregion
-
     //region navigate_single
-    suspend fun getMetadataType(id: Int): MetadataType =
-        client.getMetadataType(this.id, id)
-
     suspend fun getOcrSettings(): OcrSettings =
         client.getOcrSettings(this.id)
 
     suspend fun getParsingSettings(): ParsingSettings =
         client.getParsingSettings(this.id)
-
-    suspend fun getQuickLabel(id: Int): QuickLabel =
-        client.getQuickLabel(this.id, id)
     //endregion
 
     //region operations

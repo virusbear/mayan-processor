@@ -129,7 +129,7 @@ class DocumentClient(
     suspend fun listMetadata(id: Int): List<DocumentMetadata> =
         getPaged({
             val response = api.documents.documentsMetadataList(
-                documentId = it.toString(),
+                documentId = id.toString(),
                 page = it
             )
 

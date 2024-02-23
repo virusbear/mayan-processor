@@ -1,10 +1,10 @@
 package com.virusbear.mayan.client.model
 
-import com.virusbear.mayan.api.client.model.*
+import com.virusbear.mayan.api.client.model.ApiDuplicateTargetDocument
 import com.virusbear.mayan.client.MayanClient
 import java.net.URI
 import java.time.OffsetDateTime
-import java.util.UUID
+import java.util.*
 
 class DuplicateTargetDocument(
     private val client: MayanClient,
@@ -48,7 +48,7 @@ class DuplicateTargetDocument(
         get() = api.uuid!!
 
     val versionActive: DocumentVersion
-        get() = DocumentVersion(api.versionActive!!)
+        get() = DocumentVersion(client.documentVersions, api.versionActive!!)
 
     val versionListUrl: URI
         get() = api.versionListUrl!!

@@ -17,7 +17,7 @@ class DocumentVersionClient(
 
             response.results to response.next
         }) {
-            DocumentVersionPage(it)
+            DocumentVersionPage(client.documents, documentId, it)
         }
 
     suspend fun getPage(documentId: Int, versionId: Int, pageId: Int): DocumentVersionPage =
@@ -26,7 +26,7 @@ class DocumentVersionClient(
             documentVersionId = versionId.toString(),
             documentVersionPageId = pageId.toString()
         ).let {
-            DocumentVersionPage(it)
+            DocumentVersionPage(client.documents, documentId, it)
         }
 
     suspend fun delete(documentId: Int, versionId: Int) {

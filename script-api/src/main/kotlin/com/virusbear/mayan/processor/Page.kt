@@ -2,6 +2,6 @@ package com.virusbear.mayan.processor
 
 interface Page {
     val index: Int
-    val content: String
-    val image: ByteArray
+    suspend fun content(): String
+    suspend fun image(): ByteArray
 }

@@ -28,7 +28,7 @@ class MayanApiProcessingContext(
         TODO("Not yet supported")
     }
 
-    override suspend fun index(index: String) {
+    override suspend fun cabinet(index: String) {
         TODO("Not yet supported")
     }
 }

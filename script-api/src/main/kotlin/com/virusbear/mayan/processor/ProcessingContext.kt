@@ -9,5 +9,5 @@ interface ProcessingContext {
     suspend fun tag(tag: String)
     suspend fun metadata(type: String, value: String)
     suspend fun documentType(type: String)
-    suspend fun index(index: String)
+    suspend fun cabinet(index: String)
 }
