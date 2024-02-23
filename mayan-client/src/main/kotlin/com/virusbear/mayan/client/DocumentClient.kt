@@ -83,6 +83,9 @@ class DocumentClient(
             DocumentFile(this, it)
         }
 
+    suspend fun downloadFile(id: Int, fileId: Int): ByteArray =
+        api.documents.documentsFilesDownloadRead(id.toString(), fileId.toString()).readBytes()
+
     suspend fun listIndexes(id: Int): List<Index> =
         getPaged({
             val response = api.documents.documentsIndexesList(

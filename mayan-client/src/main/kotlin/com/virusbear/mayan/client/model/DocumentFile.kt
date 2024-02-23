@@ -55,4 +55,9 @@ class DocumentFile(
     val url: URI
         get() = api.url!!
     //endregion
+
+    //region operations
+    suspend fun download(): ByteArray =
+        client.downloadFile(documentId, id)
+    //endregion
 }
