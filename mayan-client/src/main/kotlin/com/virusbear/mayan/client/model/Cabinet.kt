@@ -42,7 +42,7 @@ class Cabinet(
         get() = api.id!!
 
     val label: String
-        get() = api.label!!
+        get() = api.label
 
     val parentId: String?
         get() = api.parentId

@@ -2,6 +2,7 @@ package com.virusbear.mayan.client.model
 
 import com.virusbear.mayan.api.client.model.ApiDocument
 import com.virusbear.mayan.client.DocumentClient
+import com.virusbear.mayan.client.MayanClient
 import java.net.URI
 import java.time.OffsetDateTime
 import java.util.*
@@ -10,6 +11,14 @@ class Document(
     private val client: DocumentClient,
     private val api: ApiDocument
 ) {
+    companion object {
+        suspend fun all(client: MayanClient): List<Document> =
+            client.documents.listDocuments()
+
+        suspend fun get(client: MayanClient, id: Int): Document =
+            client.documents.getDocument(id)
+    }
+
     //region fields
     val dateTimeCreated: OffsetDateTime
         get() = api.datetimeCreated!!

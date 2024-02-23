@@ -6,6 +6,15 @@ class DocumentClient(
     val client: MayanClient,
     api: Api
 ): BaseClient(api) {
+    suspend fun listDocuments(): List<Document> =
+        getPaged({
+            val response = api.documents.documentsList(page = it)
+
+            response.results to response.next
+        }) {
+            Document(this, it)
+        }
+
     suspend fun getDocument(id: Int): Document =
         Document(this, api.documents.documentsRead(id.toString()))
 
