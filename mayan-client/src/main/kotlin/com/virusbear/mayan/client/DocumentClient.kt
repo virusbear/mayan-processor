@@ -84,7 +84,9 @@ class DocumentClient(
         }
 
     suspend fun downloadFile(id: Int, fileId: Int): ByteArray =
-        api.documents.documentsFilesDownloadRead(id.toString(), fileId.toString()).readBytes()
+        api.documents.documentsFilesDownloadRead(id.toString(), fileId.toString()).run {
+            readBytes().also { delete() }
+        }
 
     suspend fun listDocumentFilePages(id: Int, fileId: Int): List<DocumentFilePage> =
         getPaged({
@@ -94,6 +96,14 @@ class DocumentClient(
         }) {
             DocumentFilePage(this, id, it)
         }
+
+    suspend fun downloadFilePageImage(id: Int, fileId: Int, pageId: Int): ByteArray =
+        api.documents.documentsFilesPagesImageRead(id.toString(), fileId.toString(), pageId.toString()).run {
+            readBytes().also { delete() }
+        }
+
+    suspend fun getFilePageContent(id: Int, fileId: Int, pageId: Int): String =
+        api.documents.documentsFilesPagesContentRead(id.toString(), fileId.toString(), pageId.toString()).content ?: ""
 
     suspend fun listIndexes(id: Int): List<Index> =
         getPaged({

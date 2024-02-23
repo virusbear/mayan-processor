@@ -28,4 +28,12 @@ class DocumentFilePage(
     val url: URI
         get() = api.url!!
     //endregion
+
+    //region operations
+    suspend fun downloadImage(): ByteArray =
+        client.downloadFilePageImage(documentId, documentFileId, id)
+
+    suspend fun getContent(): String =
+        client.getFilePageContent(documentId, documentFileId, id)
+    //endregion
 }
