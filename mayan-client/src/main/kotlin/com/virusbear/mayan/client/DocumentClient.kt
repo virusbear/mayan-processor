@@ -225,5 +225,17 @@ class DocumentClient(
         api.documents.documentsVersionsRead(id.toString(), versionId.toString()).let {
             DocumentVersion(client.documentVersions, it)
         }
+
+    suspend fun deleteVersionPage(id: Int, versionId: Int, pageId: Int) {
+        api.documents.documentsVersionsPagesDelete(id.toString(), versionId.toString(), pageId.toString())
+    }
+
+    suspend fun downloadVersionPageImage(id: Int, versionId: Int, pageId: Int): ByteArray =
+        api.documents.documentsVersionsPagesImageRead(id.toString(), versionId.toString(), pageId.toString()).run {
+            readBytes().also { delete() }
+        }
+
+    suspend fun getVersionPageContent(id: Int, versionId: Int, pageId: Int): String =
+        api.documents.documentsVersionsPagesOcrRead(id.toString(), versionId.toString(), pageId.toString()).content ?: ""
 }
 
