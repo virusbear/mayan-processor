@@ -56,6 +56,13 @@ class DocumentFile(
         get() = api.url!!
     //endregion
 
+    //region navigate_multiple
+    suspend fun listPages(): List<DocumentFilePage> =
+        client.listDocumentFilePages(documentId, id)
+
+    //Not implementing signatures
+    //endregion
+
     //region operations
     suspend fun download(): ByteArray =
         client.downloadFile(documentId, id)
