@@ -10,7 +10,6 @@ interface Document {
     suspend fun timestamp(): LocalDateTime
     suspend fun type(): String
     suspend fun content(): String
-    suspend fun indices(): Set<String>
     suspend fun cabinets(): Set<String>
     suspend fun tags(): Set<String>
     suspend fun metadata(): Map<String, String>

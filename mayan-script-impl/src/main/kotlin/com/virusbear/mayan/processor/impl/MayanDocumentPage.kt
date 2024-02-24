@@ -1,6 +1,6 @@
 package com.virusbear.mayan.processor.impl
 
-import com.virusbear.mayan.client.model.DocumentVersionPage
+import com.virusbear.mayan.client.DocumentVersionPage
 import com.virusbear.mayan.processor.Page
 
 class MayanDocumentPage(
@@ -9,10 +9,10 @@ class MayanDocumentPage(
     private var _content: String? = null
     private var _image: ByteArray? = null
 
-    override val index: Int = page.pageNumber
+    override val index: Int = page.number
     override suspend fun content(): String =
-        ::_content providedBy { page.getContent() }
+        ::_content providedBy { page.content() }
 
     override suspend fun image(): ByteArray =
-        ::_image providedBy { page.downloadImage() }
+        ::_image providedBy { page.image() }
 }
