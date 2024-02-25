@@ -21,6 +21,7 @@ internal class ScriptFileAlterationListener(
     override fun onFileDelete(file: File) {
         val (id, _) = host.loadMayanProcessor(file) ?: return
         closeProcessor(id)
+        processors -= id
     }
 
     private fun reloadProcessor(file: File) {

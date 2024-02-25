@@ -59,11 +59,11 @@ class MayanApiProcessingContext(
     override val Document.cabinet: ProcessingContext.DocumentCabinets by lazy {
         object: ProcessingContext.DocumentCabinets {
             override suspend fun plusAssign(label: String) {
-                api.cabinets.listCabinets().firstOrNull { it.label == label }?.addDocument(doc.id)
+                api.cabinets.find(fullPath = label)?.addDocument(doc.id)
             }
 
             override suspend fun minusAssign(label: String) {
-                api.cabinets.listCabinets().firstOrNull { it.label == label }?.removeDocument(doc.id)
+                api.cabinets.find(fullPath = label)?.removeDocument(doc.id)
             }
         }
     }

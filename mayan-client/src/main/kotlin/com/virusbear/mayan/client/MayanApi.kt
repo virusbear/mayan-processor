@@ -14,10 +14,10 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
 import java.time.LocalDateTime
-import java.util.random.RandomGeneratorFactory.all
 
 fun MayanApi(host: String, username: String, password: String): MayanApi {
     val client = HttpClient(CIO) {
@@ -57,6 +57,7 @@ class MayanApi internal constructor(
     val documents: DocumentsClient = DocumentsClient(this)
     val metadataTypes: MetadataTypesClient = MetadataTypesClient(this)
     val tags: TagsClient = TagsClient(this)
+    val cabinets: CabinetsClient = CabinetsClient(this)
 }
 
 @Serializable
@@ -66,6 +67,29 @@ internal data class PagedResult(
     val previous: String? = null,
     val results: JsonArray
 )
+
+class CabinetsClient internal constructor(
+    private val api: MayanApi
+) {
+    suspend fun all(): Flow<Cabinet> =
+        api.client.paged({
+            val response = api.client.get("cabinets") {
+                parameter("page", it)
+            }.body<PagedResult>()
+
+            response.results to (response.next != null)
+        }) {
+            Cabinet(api, it.jsonObject)
+        }
+
+    suspend fun find(fullPath: String? = null, label: String? = null): Cabinet? =
+        all().firstOrNull {  cabinet ->
+            var result = fullPath?.let { cabinet.fullPath == it } ?: true
+            result = result && label?.let { cabinet.label == it } ?: true
+
+            result
+        }
+}
 
 class TagsClient internal constructor(
     private val api: MayanApi
@@ -199,6 +223,44 @@ class DocumentsClient internal constructor(
             it.type().name == name
         }
 
+    suspend fun changeType(id: Int, typeId: Int) {
+        @Serializable
+        data class DocumentChangeTypeBody(
+            @SerialName("document_type_id")
+            val documentTypeId: String
+        )
+
+        api.client.post("documents/$id/type/change") {
+            setBody(DocumentChangeTypeBody(typeId.toString()))
+        }
+    }
+
+    suspend fun attachTag(id: Int, tagId: Int) {
+        @Serializable
+        data class DocumentTagAttachBody(
+            val tag: String
+        )
+
+        api.client.post("documents/$id/tags/attach") {
+            setBody(DocumentTagAttachBody(tagId.toString()))
+        }
+    }
+
+    suspend fun removeTag(id: Int, tagId: Int) {
+        @Serializable
+        data class DocumentTagRemoveBody(
+            val tag: String
+        )
+
+        api.client.post("documents/$id/tags/remove") {
+            setBody(DocumentTagRemoveBody(tagId.toString()))
+        }
+    }
+
+    suspend fun deleteMetadata(id: Int, metadataId: Int) {
+        api.client.delete("documents/$id/metadata/$metadataId")
+    }
+
     val files: DocumentFilesClient = DocumentFilesClient(api)
     val versions: DocumentVersionsClient = DocumentVersionsClient(api)
 }
@@ -293,6 +355,10 @@ class DocumentMetadata(
 
     val value: String?
         get() = json.stringOrNull("value")
+
+    suspend fun delete() {
+        api.documents.deleteMetadata(documentId, id)
+    }
 }
 
 class Tag(
@@ -417,8 +483,16 @@ class Document(
     suspend fun findMetadata(name: String? = null): DocumentMetadata? =
         api.documents.findMetadata(id, name)
 
-    suspend fun changeType(id: Int) {
+    suspend fun changeType(typeId: Int) {
+        api.documents.changeType(id, typeId)
+    }
 
+    suspend fun attachTag(tagId: Int) {
+        api.documents.attachTag(id, tagId)
+    }
+
+    suspend fun removeTag(tagId: Int) {
+        api.documents.removeTag(id, tagId)
     }
 }
 
