@@ -17,6 +17,8 @@ import kotlin.script.experimental.util.getOrError
 )
 abstract class MayanProcessorScript
 
+@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.FILE)
 annotation class Use(val library: String)
 
 val LibraryDirectoryProperty by PropertiesCollection.key<File>()
@@ -25,7 +27,7 @@ object MayanProcessorScriptConfiguration: ScriptCompilationConfiguration(
     {
         defaultImports(Use::class)
         jvm {
-            dependenciesFromCurrentContext("script-api")
+            dependenciesFromCurrentContext("script-definition", "script-api")
         }
         refineConfiguration {
             onAnnotations<Use> { context ->

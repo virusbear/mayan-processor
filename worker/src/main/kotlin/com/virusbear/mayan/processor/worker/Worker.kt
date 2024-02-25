@@ -1,11 +1,12 @@
 package com.virusbear.mayan.processor.worker
 
-import com.virusbear.mayan.client.MayanClient
+import com.virusbear.mayan.client.MayanApi
 import com.virusbear.mayan.processor.impl.MayanApiProcessingContext
 import com.virusbear.mayan.processor.scripting.MayanProcessorHost
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import mu.KotlinLogging
+import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.ThreadPoolExecutor
@@ -16,7 +17,7 @@ import kotlin.coroutines.EmptyCoroutineContext
 suspend fun Worker(
     queue: MayanTaskQueue,
     config: WorkerConfig,
-    client: MayanClient,
+    client: MayanApi,
     context: CoroutineContext = EmptyCoroutineContext
 ) {
     withContext(context + CoroutineName("Worker")) {
@@ -42,7 +43,7 @@ suspend fun Worker(
                     }
 
                     try {
-                        host.process(MayanApiProcessingContext(client.documents.getDocument(task.documentId)))
+                        host.process(MayanApiProcessingContext(client, client.documents.get(task.documentId)))
                         task.ack()
                     } catch (ex: Exception) {
                         logger.error(ex) { "Error processing document ${task.documentId}" }

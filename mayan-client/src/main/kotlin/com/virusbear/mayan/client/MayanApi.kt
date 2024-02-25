@@ -89,6 +89,26 @@ class CabinetsClient internal constructor(
 
             result
         }
+
+    suspend fun addDocument(id: Int, documentId: Int) {
+        @Serializable
+        data class CabinetDocumentAddBody(
+            val document: String
+        )
+        api.client.post("cabinets/$id/documents/add") {
+            setBody(CabinetDocumentAddBody(documentId.toString()))
+        }
+    }
+
+    suspend fun removeDocument(id: Int, documentId: Int) {
+        @Serializable
+        data class CabinetDocumentRemoveBody(
+            val document: String
+        )
+        api.client.post("cabinets/$id/documents/remove") {
+            setBody(CabinetDocumentRemoveBody(documentId.toString()))
+        }
+    }
 }
 
 class TagsClient internal constructor(
@@ -171,6 +191,12 @@ class DocumentTypesClient internal constructor(
 class DocumentsClient internal constructor(
     private val api: MayanApi
 ) {
+    suspend fun get(id: Int): Document =
+        Document(
+            api,
+            api.client.get("documents/$id").body<JsonObject>()
+        )
+
     suspend fun all(): Flow<Document> =
         api.client.paged({
             val response = api.client.get("documents") {
@@ -259,6 +285,43 @@ class DocumentsClient internal constructor(
 
     suspend fun deleteMetadata(id: Int, metadataId: Int) {
         api.client.delete("documents/$id/metadata/$metadataId")
+    }
+
+    suspend fun setMetadataValue(id: Int, metadataId: Int, value: String?) {
+        @Serializable
+        data class DocumentMetadataSetValueBody(
+            val value: String?
+        )
+        api.client.patch("documents/$id/metadata/$metadataId") {
+            setBody(DocumentMetadataSetValueBody(value))
+        }
+    }
+
+    suspend fun addMetadata(id: Int, metadataTypeId: Int, value: String?) {
+        @Serializable
+        data class DocumentMetadataAddBodyDocument(
+            val id: Int
+        )
+        @Serializable
+        data class DocumentMetadataAddBodyType(
+            val id: Int
+        )
+        @Serializable
+        data class DocumentMetadataAddBody(
+            val document: DocumentMetadataAddBodyDocument,
+            @SerialName("metadata_type")
+            val type: DocumentMetadataAddBodyType,
+            val value: String?
+        )
+        api.client.post("documents/$id/metadata") {
+            setBody(
+                DocumentMetadataAddBody(
+                    DocumentMetadataAddBodyDocument(id),
+                    DocumentMetadataAddBodyType(metadataTypeId),
+                    value
+                )
+            )
+        }
     }
 
     val files: DocumentFilesClient = DocumentFilesClient(api)
@@ -359,6 +422,10 @@ class DocumentMetadata(
     suspend fun delete() {
         api.documents.deleteMetadata(documentId, id)
     }
+
+    suspend fun setValue(value: String?) {
+        api.documents.setMetadataValue(documentId, id, value)
+    }
 }
 
 class Tag(
@@ -383,6 +450,14 @@ class Cabinet(
         get() = json.intOrNull("parent")
     val fullPath: String
         get() = json.string("full_path")
+
+    suspend fun addDocument(documentId: Int) {
+        api.cabinets.addDocument(id, documentId)
+    }
+
+    suspend fun removeDocument(documentId: Int) {
+        api.cabinets.removeDocument(id, documentId)
+    }
 }
 
 class DocumentType(
@@ -493,6 +568,10 @@ class Document(
 
     suspend fun removeTag(tagId: Int) {
         api.documents.removeTag(id, tagId)
+    }
+
+    suspend fun addMetadata(metadataTypeId: Int, value: String?) {
+        api.documents.addMetadata(id, metadataTypeId, value)
     }
 }
 

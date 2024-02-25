@@ -17,7 +17,7 @@ interface ProcessingContext {
         suspend operator fun minusAssign(label: String)
     }
     interface DocumentMetadata {
-        suspend operator fun plusAssign(metadata: Pair<String, String>)
+        suspend operator fun plusAssign(metadata: Pair<String, String?>)
         suspend operator fun minusAssign(label: String)
     }
     interface DocumentCabinets {

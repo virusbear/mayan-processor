@@ -40,10 +40,10 @@ class MayanApiProcessingContext(
 
     override val Document.metadata: ProcessingContext.DocumentMetadata by lazy {
         object: ProcessingContext.DocumentMetadata {
-            override suspend fun plusAssign(metadata: Pair<String, String>) {
+            override suspend fun plusAssign(metadata: Pair<String, String?>) {
                 val found = doc.findMetadata(metadata.first)
                 if(found == null) {
-                    val id = api.metadataTypes.find(metadata.first)?.id
+                    val id = api.metadataTypes.find(metadata.first)?.id!!
                     doc.addMetadata(id, metadata.second)
                 } else {
                     found.setValue(metadata.second)
