@@ -12,12 +12,14 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
 import java.time.LocalDateTime
+import java.util.random.RandomGeneratorFactory.all
 
-fun Api(host: String, username: String, password: String): Api {
+fun MayanApi(host: String, username: String, password: String): MayanApi {
     val client = HttpClient(CIO) {
         install(HttpCache)
         install(HttpTimeout)
@@ -45,14 +47,16 @@ fun Api(host: String, username: String, password: String): Api {
         }
     }
 
-    return Api(client)
+    return MayanApi(client)
 }
 
-class Api internal constructor(
+class MayanApi internal constructor(
     internal val client: HttpClient
 ) {
     val documentTypes: DocumentTypesClient = DocumentTypesClient(this)
     val documents: DocumentsClient = DocumentsClient(this)
+    val metadataTypes: MetadataTypesClient = MetadataTypesClient(this)
+    val tags: TagsClient = TagsClient(this)
 }
 
 @Serializable
@@ -63,33 +67,102 @@ internal data class PagedResult(
     val results: JsonArray
 )
 
-class DocumentTypesClient internal constructor(
-    private val api: Api
+class TagsClient internal constructor(
+    private val api: MayanApi
 ) {
+    suspend fun all(): Flow<Tag> =
+        api.client.paged({
+            val response = api.client.get("tags") {
+                parameter("page", it)
+            }.body<PagedResult>()
+
+            response.results to (response.next != null)
+        }) {
+            Tag(api, it.jsonObject)
+        }
+
+    suspend fun find(label: String? = null): Tag? =
+        all().firstOrNull {
+            it.label == label
+        }
+}
+
+class MetadataTypesClient internal constructor(
+    private val api: MayanApi
+) {
+    suspend fun all(): Flow<MetadataType> =
+        api.client.paged({
+            val response = api.client.get("metadata_types") {
+                parameter("page", it)
+            }.body<PagedResult>()
+
+            response.results to (response.next != null)
+        }) {
+            MetadataType(
+                api,
+                it.jsonObject
+            )
+        }
+
+    suspend fun get(id: Int): MetadataType =
+        MetadataType(
+            api,
+            api.client.get("metadata_types/$id").body<JsonObject>()
+        )
+
+    suspend fun find(name: String? = null): MetadataType? =
+        all().firstOrNull {
+            it.name == name
+        }
+}
+
+class DocumentTypesClient internal constructor(
+    private val api: MayanApi
+) {
+    suspend fun all(): Flow<DocumentType> =
+        api.client.paged({
+            val response = api.client.get("document_types") {
+                parameter("page", it)
+            }.body<PagedResult>()
+
+            response.results to (response.next != null)
+        }) {
+            DocumentType(
+                api,
+                it.jsonObject
+            )
+        }
     suspend fun get(id: Int): DocumentType =
         DocumentType(
             api,
             api.client.get("document_types/$id").body<JsonObject>()
         )
+
+    suspend fun find(label: String? = null): DocumentType? =
+        all().firstOrNull {
+            it.label == label
+        }
 }
 
 class DocumentsClient internal constructor(
-    private val api: Api
+    private val api: MayanApi
 ) {
     suspend fun all(): Flow<Document> =
         api.client.paged({
-            val result = api.client.get("documents") {
+            val response = api.client.get("documents") {
                 parameter("page", it)
             }.body<PagedResult>()
 
-            result.results to (result.next != null)
+            response.results to (response.next != null)
         }) {
             Document(api, it.jsonObject)
         }
 
     suspend fun cabinets(id: Int): Flow<Cabinet> =
         api.client.paged({
-            val response = api.client.get("documents/$id/cabients").body<PagedResult>()
+            val response = api.client.get("documents/$id/cabients") {
+                parameter("page", it)
+            }.body<PagedResult>()
 
             response.results to (response.next != null)
         }) {
@@ -101,11 +174,29 @@ class DocumentsClient internal constructor(
 
     suspend fun tags(id: Int): Flow<Tag> =
         api.client.paged({
-            val response = api.client.get("documents/$id/tags").body<PagedResult>()
+            val response = api.client.get("documents/$id/tags") {
+                parameter("page", it)
+            }.body<PagedResult>()
 
             response.results to (response.next != null)
         }) {
             Tag(api, it.jsonObject)
+        }
+
+    suspend fun metadata(id: Int): Flow<DocumentMetadata> =
+        api.client.paged({
+            val response = api.client.get("documents/$id/metadata") {
+                parameter("page", it)
+            }.body<PagedResult>()
+
+            response.results to (response.next != null)
+        }) {
+            DocumentMetadata(api, it.jsonObject)
+        }
+
+    suspend fun findMetadata(id: Int, name: String? = null): DocumentMetadata? =
+        metadata(id).firstOrNull {
+            it.type().name == name
         }
 
     val files: DocumentFilesClient = DocumentFilesClient(api)
@@ -113,7 +204,7 @@ class DocumentsClient internal constructor(
 }
 
 class DocumentFilesClient internal constructor(
-    private val api: Api
+    private val api: MayanApi
 ) {
     suspend fun get(documentId: Int, id: Int): DocumentFile =
         DocumentFile(
@@ -126,7 +217,7 @@ class DocumentFilesClient internal constructor(
 }
 
 class DocumentVersionsClient internal constructor(
-    private val api: Api
+    private val api: MayanApi
 ) {
     val pages: DocumentVersionPagesClient = DocumentVersionPagesClient(api)
 
@@ -138,7 +229,9 @@ class DocumentVersionsClient internal constructor(
 
     suspend fun listPages(documentId: Int, id: Int): Flow<DocumentVersionPage> =
         api.client.paged({
-            val response = api.client.get("documents/$documentId/versions/$id/pages").body<PagedResult>()
+            val response = api.client.get("documents/$documentId/versions/$id/pages") {
+                parameter("page", it)
+            }.body<PagedResult>()
 
             response.results to (response.next != null)
         }) {
@@ -151,7 +244,7 @@ class DocumentVersionsClient internal constructor(
 }
 
 class DocumentVersionPagesClient internal constructor(
-    private val api: Api
+    private val api: MayanApi
 ) {
     suspend fun content(documentId: Int, versionId: Int, id: Int): String =
         api.client.get("documents/$documentId/versions/$versionId/pages/$id/ocr").body<JsonObject>().string("content")
@@ -172,8 +265,38 @@ internal suspend fun <R> HttpClient.paged(call: suspend (page: Int) -> Pair<Json
         } while(next)
     }
 
+class MetadataType(
+    private val api: MayanApi,
+    private val json: JsonObject
+) {
+    val id: Int
+        get() = json.int("id")
+    val default: String?
+        get() = json.stringOrNull("default")
+    val label: String
+        get() = json.string("label")
+    val name: String
+        get() = json.string("name")
+}
+
+class DocumentMetadata(
+    private val api: MayanApi,
+    private val json: JsonObject
+) {
+    val id: Int
+        get() = json.int("id")
+    val documentId: Int
+        get() = json.jsonObject("document").int("id")
+
+    suspend fun type(): MetadataType =
+        api.metadataTypes.get(json.jsonObject("metadata_type").int("id"))
+
+    val value: String?
+        get() = json.stringOrNull("value")
+}
+
 class Tag(
-    private val api: Api,
+    private val api: MayanApi,
     private val json: JsonObject
 ) {
     val id: Int
@@ -183,21 +306,21 @@ class Tag(
 }
 
 class Cabinet(
-    private val api: Api,
+    private val api: MayanApi,
     private val json: JsonObject
 ) {
     val id: Int
         get() = json.int("id")
     val label: String
         get() = json.string("label")
-    val parentId: Int
-        get() = json.int("parent")
+    val parentId: Int?
+        get() = json.intOrNull("parent")
     val fullPath: String
         get() = json.string("full_path")
 }
 
 class DocumentType(
-    private val api: Api,
+    private val api: MayanApi,
     private val json: JsonObject
 ) {
     val id: Int
@@ -207,7 +330,7 @@ class DocumentType(
 }
 
 class DocumentVersion(
-    private val api: Api,
+    private val api: MayanApi,
     private val json: JsonObject
 ) {
     val documentId: Int
@@ -221,7 +344,7 @@ class DocumentVersion(
 
 class DocumentVersionPage(
     private val documentId: Int,
-    private val api: Api,
+    private val api: MayanApi,
     private val json: JsonObject
 ) {
     val id: Int
@@ -241,7 +364,7 @@ class DocumentVersionPage(
 }
 
 class DocumentFile(
-    private val api: Api,
+    private val api: MayanApi,
     private val json: JsonObject
 ) {
     val documentId: Int
@@ -261,7 +384,7 @@ class DocumentFile(
 }
 
 class Document(
-    private val api: Api,
+    private val api: MayanApi,
     private val json: JsonObject
 ) {
     val id: Int
@@ -287,6 +410,16 @@ class Document(
 
     suspend fun tags(): Flow<Tag> =
         api.documents.tags(id)
+
+    suspend fun metadata(): Flow<DocumentMetadata> =
+        api.documents.metadata(id)
+
+    suspend fun findMetadata(name: String? = null): DocumentMetadata? =
+        api.documents.findMetadata(id, name)
+
+    suspend fun changeType(id: Int) {
+
+    }
 }
 
 fun JsonObject.jsonObjectOrNull(key: String): JsonObject? =

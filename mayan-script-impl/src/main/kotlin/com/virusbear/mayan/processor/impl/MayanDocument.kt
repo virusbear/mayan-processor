@@ -39,7 +39,7 @@ class MayanDocument(
         ::_tags providedBy { document.tags().map { it.label }.toList().toSet() }
 
     override suspend fun metadata(): Map<String, String> =
-        ::_metadata providedBy { document.listMetadata().associate { it.metadataType.label to it.value } }
+        ::_metadata providedBy { document.metadata().toList().associate { it.type().name to (it.value ?: "") } }
 
     override suspend fun pages(): List<Page> =
         ::_pages providedBy {
