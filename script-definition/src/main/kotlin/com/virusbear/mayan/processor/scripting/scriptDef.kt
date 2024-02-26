@@ -19,6 +19,7 @@ abstract class MayanProcessorScript
 
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.FILE)
+@Repeatable
 annotation class Use(val library: String)
 
 val LibraryDirectoryProperty by PropertiesCollection.key<File>()

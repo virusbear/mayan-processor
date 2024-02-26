@@ -2,6 +2,7 @@ package com.virusbear.mayan.processor.worker
 
 import com.virusbear.mayan.client.MayanApi
 import com.virusbear.mayan.processor.impl.MayanApiProcessingContext
+import com.virusbear.mayan.processor.ocr.TesseractDocumentContentProvider
 import com.virusbear.mayan.processor.scripting.MayanProcessorHost
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
@@ -43,7 +44,9 @@ suspend fun Worker(
                     }
 
                     try {
-                        host.process(MayanApiProcessingContext(client, client.documents.get(task.documentId)))
+                        val document = client.documents.get(task.documentId)
+                        val contentProvider = TesseractDocumentContentProvider(config.tesseractDataPath)
+                        host.process(MayanApiProcessingContext(client, document, contentProvider))
                         task.ack()
                     } catch (ex: Exception) {
                         logger.error(ex) { "Error processing document ${task.documentId}" }
@@ -58,6 +61,7 @@ suspend fun Worker(
 
         scheduler.join()
         awaiter.join()
+        host.close()
     }
 }
 

@@ -9,5 +9,6 @@ data class WorkerConfig(
     val scriptPath: File = File("./scripts"),
     val libraryPath: File = File("./lib"),
     val disabledModules: Set<String> = emptySet(),
-    val watch: Boolean = true
+    val watch: Boolean = true,
+    val tesseractDataPath: File = File("./tesseract")
 )

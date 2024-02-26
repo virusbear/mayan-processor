@@ -9,7 +9,6 @@ dependencies {
     implementation("io.github.microutils:kotlin-logging:$logging_version")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version")
 
-    api(project(":mayan-script-impl"))
-    api(project(":script-host"))
-    api(project(":tesseract-ocr"))
+    implementation(project(":script-api"))
+    api("net.sourceforge.tess4j:tess4j:5.10.0")
 }

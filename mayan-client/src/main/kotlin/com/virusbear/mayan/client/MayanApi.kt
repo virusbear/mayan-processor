@@ -9,11 +9,11 @@ import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.plugins.cache.*
 import io.ktor.client.plugins.compression.*
 import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
+import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.*
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
@@ -21,6 +21,9 @@ import java.time.LocalDateTime
 
 fun MayanApi(host: String, username: String, password: String): MayanApi {
     val client = HttpClient(CIO) {
+        install(HttpRedirect) {
+            checkHttpMethod = false
+        }
         install(HttpCache)
         install(HttpTimeout)
         install(ContentEncoding) {
@@ -44,6 +47,9 @@ fun MayanApi(host: String, username: String, password: String): MayanApi {
         }
         defaultRequest {
             url("$host/api/v4/")
+        }
+        install(Logging) {
+            level = LogLevel.ALL
         }
     }
 
@@ -83,12 +89,19 @@ class CabinetsClient internal constructor(
         }
 
     suspend fun find(fullPath: String? = null, label: String? = null): Cabinet? =
-        all().firstOrNull {  cabinet ->
-            var result = fullPath?.let { cabinet.fullPath == it } ?: true
-            result = result && label?.let { cabinet.label == it } ?: true
-
-            result
-        }
+        all().let { flow ->
+            fullPath?.let {
+                flow.filter {
+                    it.fullPath == fullPath
+                }
+            } ?: flow
+        }.let { flow ->
+            label?.let {
+                flow.filter {
+                    it.label == label
+                }
+            } ?: flow
+        }.firstOrNull()
 
     suspend fun addDocument(id: Int, documentId: Int) {
         @Serializable
@@ -96,6 +109,7 @@ class CabinetsClient internal constructor(
             val document: String
         )
         api.client.post("cabinets/$id/documents/add") {
+            contentType(ContentType.Application.Json)
             setBody(CabinetDocumentAddBody(documentId.toString()))
         }
     }
@@ -106,6 +120,7 @@ class CabinetsClient internal constructor(
             val document: String
         )
         api.client.post("cabinets/$id/documents/remove") {
+            contentType(ContentType.Application.Json)
             setBody(CabinetDocumentRemoveBody(documentId.toString()))
         }
     }
@@ -176,6 +191,7 @@ class DocumentTypesClient internal constructor(
                 it.jsonObject
             )
         }
+
     suspend fun get(id: Int): DocumentType =
         DocumentType(
             api,
@@ -257,6 +273,7 @@ class DocumentsClient internal constructor(
         )
 
         api.client.post("documents/$id/type/change") {
+            contentType(ContentType.Application.Json)
             setBody(DocumentChangeTypeBody(typeId.toString()))
         }
     }
@@ -268,6 +285,7 @@ class DocumentsClient internal constructor(
         )
 
         api.client.post("documents/$id/tags/attach") {
+            contentType(ContentType.Application.Json)
             setBody(DocumentTagAttachBody(tagId.toString()))
         }
     }
@@ -279,6 +297,7 @@ class DocumentsClient internal constructor(
         )
 
         api.client.post("documents/$id/tags/remove") {
+            contentType(ContentType.Application.Json)
             setBody(DocumentTagRemoveBody(tagId.toString()))
         }
     }
@@ -293,31 +312,23 @@ class DocumentsClient internal constructor(
             val value: String?
         )
         api.client.patch("documents/$id/metadata/$metadataId") {
+            contentType(ContentType.Application.Json)
             setBody(DocumentMetadataSetValueBody(value))
         }
     }
 
     suspend fun addMetadata(id: Int, metadataTypeId: Int, value: String?) {
         @Serializable
-        data class DocumentMetadataAddBodyDocument(
-            val id: Int
-        )
-        @Serializable
-        data class DocumentMetadataAddBodyType(
-            val id: Int
-        )
-        @Serializable
         data class DocumentMetadataAddBody(
-            val document: DocumentMetadataAddBodyDocument,
-            @SerialName("metadata_type")
-            val type: DocumentMetadataAddBodyType,
+            @SerialName("metadata_type_id")
+            val type: Int,
             val value: String?
         )
         api.client.post("documents/$id/metadata") {
+            contentType(ContentType.Application.Json)
             setBody(
                 DocumentMetadataAddBody(
-                    DocumentMetadataAddBodyDocument(id),
-                    DocumentMetadataAddBodyType(metadataTypeId),
+                    metadataTypeId,
                     value
                 )
             )
@@ -362,6 +373,7 @@ class DocumentVersionsClient internal constructor(
         }) {
             DocumentVersionPage(
                 documentId,
+                id,
                 api,
                 it.jsonObject
             )
@@ -378,7 +390,10 @@ class DocumentVersionPagesClient internal constructor(
         api.client.get("documents/$documentId/versions/$versionId/pages/$id/image").body<ByteArray>()
 }
 
-internal suspend fun <R> HttpClient.paged(call: suspend (page: Int) -> Pair<JsonArray, Boolean>, map: (JsonElement) -> R): Flow<R> =
+internal suspend fun <R> HttpClient.paged(
+    call: suspend (page: Int) -> Pair<JsonArray, Boolean>,
+    map: (JsonElement) -> R
+): Flow<R> =
     flow {
         var page = 1
 
@@ -387,7 +402,7 @@ internal suspend fun <R> HttpClient.paged(call: suspend (page: Int) -> Pair<Json
             results.map {
                 emit(map(it))
             }
-        } while(next)
+        } while (next)
     }
 
 class MetadataType(
@@ -485,13 +500,12 @@ class DocumentVersion(
 
 class DocumentVersionPage(
     private val documentId: Int,
+    private val versionId: Int,
     private val api: MayanApi,
     private val json: JsonObject
 ) {
     val id: Int
         get() = json.int("id")
-    val versionId: Int
-        get() = json.int("versionId")
     val objectId: Int
         get() = json.int("objectId")
     val number: Int

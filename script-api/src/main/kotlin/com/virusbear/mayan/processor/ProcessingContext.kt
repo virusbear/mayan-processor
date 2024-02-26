@@ -1,16 +1,13 @@
 package com.virusbear.mayan.processor
 
-interface ProcessingContext {
+interface ProcessingContext: DocumentContentProvider {
     val document: Document
 
-    suspend fun regex(pattern: String, group: Int = 1): String
-    suspend fun regex(pattern: String, group: String): String
-
-    suspend fun documentType(label: String)
+    suspend fun type(label: String)
 
     val Document.tags: DocumentTags
     val Document.metadata: DocumentMetadata
-    val Document.cabinet: DocumentCabinets
+    val Document.cabinets: DocumentCabinets
 
     interface DocumentTags {
         suspend operator fun plusAssign(label: String)

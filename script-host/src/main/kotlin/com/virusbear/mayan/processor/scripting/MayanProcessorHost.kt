@@ -7,6 +7,7 @@ import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import org.apache.commons.io.monitor.FileAlterationMonitor
 import org.apache.commons.io.monitor.FileAlterationObserver
+import java.io.Closeable
 import java.io.File
 import kotlin.script.experimental.api.*
 import kotlin.script.experimental.host.toScriptSource
@@ -17,7 +18,7 @@ class MayanProcessorHost(
     private val scriptPath: File,
     private val libraryPath: File,
     watch: Boolean = true
-) {
+): Closeable {
     companion object {
         private val logger = KotlinLogging.logger { }
     }
@@ -30,6 +31,8 @@ class MayanProcessorHost(
 
     private val processors: MutableMap<String, MayanProcessor>
     private val disabledProcessors = mutableSetOf<String>()
+
+    private var fileAlterationMonitor: FileAlterationMonitor? = null
 
     init {
         if(!scriptPath.exists()) {
@@ -49,7 +52,7 @@ class MayanProcessorHost(
             val listener = ScriptFileAlterationListener(this, processors)
             val observer = FileAlterationObserver(scriptPath) { it.isFile && it.name.endsWith(".mayan.kts") }
             observer.addListener(listener)
-            FileAlterationMonitor(3L, observer).start()
+            fileAlterationMonitor = FileAlterationMonitor(3L, observer).also { it.start() }
         }
     }
 
@@ -64,7 +67,13 @@ class MayanProcessorHost(
     suspend fun process(context: ProcessingContext) {
         processors.filterKeys { it !in disabledProcessors }.toList().firstOrNull { (_, processor) ->
             processor.accept(context.document)
-        }?.second?.process(context)
+        }?.also { (id, _) ->
+            logger.info("Processing document ${context.document.id()} using $id")
+        }?.second?.process(context) ?: logger.warn("No processor found for document ${context.document.id()}.")
+    }
+
+    override fun close() {
+        fileAlterationMonitor?.stop()
     }
 
     private fun loadProcessors(scriptPath: File): Map<String, MayanProcessor> {

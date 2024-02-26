@@ -1,12 +1,14 @@
 package com.virusbear.mayan.launcher
 
 import com.virusbear.beanstalkt.DefaultClient
-import com.virusbear.mayan.client.MayanClient
+import com.virusbear.mayan.client.MayanApi
 import com.virusbear.mayan.config.ConfigLoader
 import com.virusbear.mayan.entrypoint.EntryPoint
 import com.virusbear.mayan.launcher.beanstalkd.BeanstalkdTaskQueue
 import com.virusbear.mayan.launcher.config.model.LauncherConfig
 import com.virusbear.mayan.launcher.config.model.Profile
+import com.virusbear.mayan.processor.impl.MayanApiProcessingContext
+import com.virusbear.mayan.processor.scripting.MayanProcessorHost
 import com.virusbear.mayan.processor.worker.Worker
 import kotlinx.coroutines.*
 import mu.KotlinLogging
@@ -26,7 +28,7 @@ internal object Launcher {
         val config = readConfig(args)
 
         supervisorScope {
-            val client = MayanClient(config.mayan.host, config.mayan.user, config.mayan.password)
+            val client = MayanApi(config.mayan.host, config.mayan.user, config.mayan.password)
 
             for(profile in config.profile) {
                 when(profile) {

@@ -2,26 +2,28 @@ package com.virusbear.mayan.processor.impl
 
 import com.virusbear.mayan.client.MayanApi
 import com.virusbear.mayan.processor.Document
+import com.virusbear.mayan.processor.DocumentContentProvider
 import com.virusbear.mayan.processor.ProcessingContext
 import kotlinx.coroutines.flow.firstOrNull
 import com.virusbear.mayan.client.Document as ApiDocument
 
 class MayanApiProcessingContext(
     private val api: MayanApi,
-    private val doc: ApiDocument
-): ProcessingContext {
-    override val document: Document
-        get() = MayanDocument(doc)
+    private val doc: ApiDocument,
+    private val contentProvider: DocumentContentProvider
+): ProcessingContext, DocumentContentProvider by contentProvider {
+    override val document: Document by lazy {
+        MayanDocument(doc).cached()
+    }
 
-    override suspend fun regex(pattern: String, group: Int): String =
-        pattern.toRegex().find(document.content())?.groups?.get(group)?.value ?: ""
+    init {
+        contentProvider.withDocument(document)
+    }
 
-    override suspend fun regex(pattern: String, group: String): String =
-        pattern.toRegex().find(document.content())?.groups?.get(group)?.value ?: ""
-
-    override suspend fun documentType(label: String) {
+    override suspend fun type(label: String) {
         val id = api.documentTypes.find(label = label)?.id ?: return
         doc.changeType(id)
+        invalidate()
     }
 
     override val Document.tags: ProcessingContext.DocumentTags by lazy {
@@ -29,11 +31,13 @@ class MayanApiProcessingContext(
             override suspend fun plusAssign(label: String) {
                 val id = api.tags.find(label = label)?.id ?: return
                 doc.attachTag(id)
+                invalidate()
             }
 
             override suspend fun minusAssign(label: String) {
                 val id = api.tags.find(label = label)?.id ?: return
                 doc.removeTag(id)
+                invalidate()
             }
         }
     }
@@ -48,23 +52,31 @@ class MayanApiProcessingContext(
                 } else {
                     found.setValue(metadata.second)
                 }
+                invalidate()
             }
 
             override suspend fun minusAssign(label: String) {
                 doc.findMetadata(label)?.delete()
+                invalidate()
             }
         }
     }
 
-    override val Document.cabinet: ProcessingContext.DocumentCabinets by lazy {
+    override val Document.cabinets: ProcessingContext.DocumentCabinets by lazy {
         object: ProcessingContext.DocumentCabinets {
             override suspend fun plusAssign(label: String) {
                 api.cabinets.find(fullPath = label)?.addDocument(doc.id)
+                invalidate()
             }
 
             override suspend fun minusAssign(label: String) {
                 api.cabinets.find(fullPath = label)?.removeDocument(doc.id)
+                invalidate()
             }
         }
+    }
+
+    private fun invalidate() {
+        (document as? CachedDocument)?.invalidate()
     }
 }
