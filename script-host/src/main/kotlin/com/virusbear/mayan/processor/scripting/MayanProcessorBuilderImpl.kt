@@ -1,13 +1,10 @@
 package com.virusbear.mayan.processor.scripting
 
-import com.virusbear.mayan.processor.Document
-import com.virusbear.mayan.processor.MayanProcessor
-import com.virusbear.mayan.processor.MayanProcessorBuilder
-import com.virusbear.mayan.processor.ProcessingContext
+import com.virusbear.mayan.processor.*
 
 class MayanProcessorBuilderImpl(override var id: String) : MayanProcessorBuilder {
     private var initializer: (suspend () -> Unit) = { }
-    private var acceptor: (suspend (Document) -> Boolean) = { false }
+    private var acceptor: (suspend DocumentContentProvider.(Document) -> Boolean) = { false }
     private var processor: (suspend ProcessingContext.() -> Unit) = { }
     private var closer: (suspend () -> Unit) = { }
 
@@ -15,7 +12,7 @@ class MayanProcessorBuilderImpl(override var id: String) : MayanProcessorBuilder
         initializer = block
     }
 
-    override fun accept(block: suspend (Document) -> Boolean) {
+    override fun accept(block: suspend DocumentContentProvider.(Document) -> Boolean) {
         acceptor = block
     }
 

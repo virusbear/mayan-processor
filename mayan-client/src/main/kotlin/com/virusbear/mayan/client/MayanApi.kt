@@ -48,9 +48,6 @@ fun MayanApi(host: String, username: String, password: String): MayanApi {
         defaultRequest {
             url("$host/api/v4/")
         }
-        install(Logging) {
-            level = LogLevel.ALL
-        }
     }
 
     return MayanApi(client)

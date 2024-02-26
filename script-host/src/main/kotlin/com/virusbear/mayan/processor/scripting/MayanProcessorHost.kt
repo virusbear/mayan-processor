@@ -66,7 +66,7 @@ class MayanProcessorHost(
 
     suspend fun process(context: ProcessingContext) {
         processors.filterKeys { it !in disabledProcessors }.toList().firstOrNull { (_, processor) ->
-            processor.accept(context.document)
+            processor.accept(context, context.document)
         }?.also { (id, _) ->
             logger.info("Processing document ${context.document.id()} using $id")
         }?.second?.process(context) ?: logger.warn("No processor found for document ${context.document.id()}.")

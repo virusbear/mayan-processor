@@ -46,18 +46,16 @@ class TesseractDocumentContentProvider(
             setDatapath(dataPath.absolutePath)
             setOcrEngineMode(ocrEngineMode)
             setPageSegMode(pageSegmentationMode)
+            setLanguage(region.language)
 
             return doOCR(
-                img,
-                null,
-                listOf(
-                    Rectangle(
-                        floor(img.width * region.x).toInt(),
-                        floor(img.height * region.y).toInt(),
-                        ceil(img.width * region.width).toInt(),
-                        ceil(img.height * region.height).toInt()
-                    )
-                ))
+                img.getSubimage(
+                    floor(img.width * region.x).toInt(),
+                    floor(img.height * region.y).toInt(),
+                    ceil(img.width * region.width).toInt(),
+                    ceil(img.height * region.height).toInt()
+                )
+            )
         }
     }
 }
